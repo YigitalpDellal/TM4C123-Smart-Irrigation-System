@@ -52,7 +52,32 @@ Tiva 3.3 V
 
 The LDR, PE2 jumper, and one side of the 10 kΩ resistor share the same midpoint node.
 
-## 6. BC337 Relay Driver
+## 6. Battery Pack and LM2596 Setup
+
+The power-side circuit is supplied from a four-cell AA battery holder through an LM2596 buck converter.
+
+The regulator was adjusted before connecting the relay and pump circuitry. The battery pack was first measured with a digital multimeter at approximately **5.72 V**. The LM2596 output was then measured directly and its onboard adjustment potentiometer was turned until the output settled at **5.00 V**.
+
+```text
+4 x AA battery pack
+        |
+        v
+   LM2596 input
+        |
+   buck conversion
+        |
+        +---- OUT+ = 5.00 V
+        +---- OUT- = power ground
+```
+
+The adjustment was made under measurement rather than assuming that the module was already set correctly.
+
+Reference photographs:
+
+- [`images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg`](../images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg) — battery-pack voltage measured at about 5.72 V
+- [`images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg`](../images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg) — LM2596 output adjusted and verified at 5.00 V
+
+## 7. BC337 Relay Driver
 
 With the verified transistor orientation used in the prototype, the driver is wired as:
 
@@ -65,7 +90,7 @@ LM2596 OUT+ -> 10 kΩ -> Relay IN / Collector node
 
 The 1 kΩ resistor limits base current. The 10 kΩ resistor provides the relay-input pull-up.
 
-## 7. Relay Module Supply
+## 8. Relay Module Supply
 
 ```text
 Relay VCC -> LM2596 OUT+
@@ -73,7 +98,7 @@ Relay GND -> LM2596 OUT-
 Relay IN  -> BC337 Collector node
 ```
 
-## 8. Pump Power Path
+## 9. Pump Power Path
 
 ```text
 LM2596 OUT+ -> Relay COM
@@ -83,18 +108,18 @@ Pump black / - -> LM2596 OUT-
 
 The normally-open contact is used so the pump is OFF when the relay is inactive.
 
-## 9. Flyback Diode
+## 10. Flyback Diode
 
 The 1N4007 is connected across the pump supply path in reverse bias during normal operation:
 
 ```text
-1N4007 striped end   -> Pump + / Relay NO side
+1N4007 striped end     -> Pump + / Relay NO side
 1N4007 non-striped end -> Pump - / LM2596 OUT-
 ```
 
 The stripe marks the cathode.
 
-## 10. Motor Noise-Suppression Capacitor
+## 11. Motor Noise-Suppression Capacitor
 
 A 100 nF ceramic capacitor is placed across the pump terminals:
 
@@ -104,7 +129,7 @@ Pump + ---- 100 nF ---- Pump -
 
 Ceramic capacitors are non-polarized.
 
-## 11. LM2596 Bulk Capacitor
+## 12. LM2596 Bulk Capacitor
 
 A 470 µF electrolytic capacitor is connected across the LM2596 output:
 
@@ -115,7 +140,7 @@ A 470 µF electrolytic capacitor is connected across the LM2596 output:
 
 The negative stripe on the capacitor body identifies the negative terminal.
 
-## 12. Common Ground Between Subsystems
+## 13. Common Ground Between Subsystems
 
 The sensitive electronics and power subsystem require a shared electrical reference for the PB0 control signal.
 
@@ -127,7 +152,7 @@ Tiva GND -> LM2596 OUT-
 
 The final layout intentionally avoids multiple unnecessary ground bridges between the two breadboards.
 
-## 13. SW1 User Button
+## 14. SW1 User Button
 
 LaunchPad SW1 is connected internally to PF4 and is configured with the internal pull-up resistor.
 
@@ -143,7 +168,7 @@ First press  -> START irrigation automation
 Second press -> STOP, pump OFF, reset counters and safety state
 ```
 
-## 14. Final Pin Summary
+## 15. Final Pin Summary
 
 | Tiva Pin | Function |
 |---|---|
@@ -157,11 +182,13 @@ Second press -> STOP, pump OFF, reset counters and safety state
 | PE3 | Soil ADC / AIN0 |
 | PF4 | SW1 user input |
 
-## 15. Power-Up Check
+## 16. Power-Up Check
 
 Before applying power, verify:
 
-- no direct short between OUT+ and OUT-
+- the battery pack is connected to the LM2596 input, not directly to the 5 V power-side nodes
+- LM2596 output has been measured and adjusted to about 5.00 V
+- no direct short exists between OUT+ and OUT-
 - electrolytic capacitor polarity is correct
 - diode stripe is on the pump-positive side
 - relay COM/NO are used, not NC
