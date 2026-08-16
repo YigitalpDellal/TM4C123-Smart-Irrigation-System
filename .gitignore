@@ -1,0 +1,30 @@
+# Code Composer Studio generated output
+Debug/
+Release/
+*.out
+*.map
+*.obj
+*.o
+*.d
+*.pp
+*.hex
+*.bin
+
+# CCS workspace/project metadata that should not be committed from local workspace
+.metadata/
+.settings/org.eclipse.core.resources.prefs
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary/editor files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Original phone image formats are archived locally; GitHub uses curated JPG/PNG copies
+*.HEIC
+*.heic
