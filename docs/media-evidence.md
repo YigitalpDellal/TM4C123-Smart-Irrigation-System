@@ -81,21 +81,27 @@ The `images/components/` directory contains individual reference photographs for
 
 ## 12. Video Tests
 
+GitHub repository file pages are not a dependable in-browser player for these larger committed MP4s. Each link below therefore points directly to the raw media file, which a browser will either play or download depending on browser settings.
+
 ### Final demonstration
 
-- [`videos/final-demo/01-final-irrigation-demo.mp4`](../videos/final-demo/01-final-irrigation-demo.mp4)
+- [Final irrigation demonstration — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4)
 
 ### Subsystem / integration recordings
 
-- [`videos/subsystem-tests/01-soil-moisture-water-test.mp4`](../videos/subsystem-tests/01-soil-moisture-water-test.mp4)
-- [`videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4`](../videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
-- [`videos/subsystem-tests/03-relay-driver-switching-test.mp4`](../videos/subsystem-tests/03-relay-driver-switching-test.mp4)
-- [`videos/subsystem-tests/04-pump-display-integration-test.mp4`](../videos/subsystem-tests/04-pump-display-integration-test.mp4)
-- [`videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4`](../videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
-- [`videos/subsystem-tests/06-integrated-system-control-test.mp4`](../videos/subsystem-tests/06-integrated-system-control-test.mp4)
+- [Soil-moisture / water test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/01-soil-moisture-water-test.mp4)
+- [OLED and sensor subsystem test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
+- [Relay-driver switching test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4)
+- [Pump and display integration test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4)
+- [Sensitive-subsystem soil test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
+- [Integrated system control test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4)
 
 The MP4 files are repository-optimized copies. The original 4K MOV recordings should remain in the local project archive.
 
-## 13. Documentation Use
+## 13. Full Media Inventory
+
+Every retained image and video is catalogued in [`media-inventory.md`](media-inventory.md). This evidence index intentionally stays shorter and focuses on the strongest engineering evidence.
+
+## 14. Documentation Use
 
 When a still image was extracted from a project video, it should be described in formal documentation as a **frame captured from the system validation video** rather than as a separately photographed test image.
