@@ -15,21 +15,23 @@ The final prototype combines sensor calibration, 16-sample ADC averaging, hyster
 - **Project report:** [`docs/project-report.md`](docs/project-report.md)
 - **Hardware connections:** [`docs/hardware-connections.md`](docs/hardware-connections.md)
 - **Troubleshooting record:** [`docs/troubleshooting.md`](docs/troubleshooting.md)
+- **Troubleshooting coverage audit:** [`docs/troubleshooting-audit.md`](docs/troubleshooting-audit.md)
 - **Test results:** [`docs/test-results.md`](docs/test-results.md)
 - **Build and run guide:** [`docs/build-and-run.md`](docs/build-and-run.md)
 - **Media evidence index:** [`docs/media-evidence.md`](docs/media-evidence.md)
+- **Complete media inventory:** [`docs/media-inventory.md`](docs/media-inventory.md)
 
 ## Video Demonstrations
 
-The repository contains optimized H.264/MP4 copies of the original 4K validation recordings.
+The repository contains optimized H.264/MP4 copies of the original 4K validation recordings. GitHub's normal file page is not a reliable video player for these larger committed files, so the links below point directly to the raw media files.
 
-- **[Final irrigation demonstration](videos/final-demo/01-final-irrigation-demo.mp4)**
-- [Soil-moisture / water test](videos/subsystem-tests/01-soil-moisture-water-test.mp4)
-- [OLED and sensor subsystem test](videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
-- [Relay-driver switching test](videos/subsystem-tests/03-relay-driver-switching-test.mp4)
-- [Pump and display integration test](videos/subsystem-tests/04-pump-display-integration-test.mp4)
-- [Sensitive-subsystem soil test](videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
-- [Integrated system control test](videos/subsystem-tests/06-integrated-system-control-test.mp4)
+- **[Final irrigation demonstration — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4)**
+- [Soil-moisture / water test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/01-soil-moisture-water-test.mp4)
+- [OLED and sensor subsystem test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
+- [Relay-driver switching test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4)
+- [Pump and display integration test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4)
+- [Sensitive-subsystem soil test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
+- [Integrated system control test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4)
 
 ## Main Features
 
@@ -274,8 +276,10 @@ TM4C123-Smart-Irrigation-System/
 │   ├── development-log.md
 │   ├── hardware-connections.md
 │   ├── media-evidence.md
+│   ├── media-inventory.md
 │   ├── project-report.md
 │   ├── test-results.md
+│   ├── troubleshooting-audit.md
 │   ├── troubleshooting.md
 │   └── user-manual.md
 ├── images/
@@ -294,6 +298,7 @@ TM4C123-Smart-Irrigation-System/
 ├── videos/
 │   ├── subsystem-tests/
 │   └── final-demo/
+├── .gitattributes
 ├── .gitignore
 ├── CHANGELOG.md
 ├── LICENSE
