@@ -1,6 +1,6 @@
 # Media Evidence Index
 
-This document maps the repository photographs, UART screenshots, and videos to the engineering claims they support.
+This document maps repository photographs, UART screenshots, and videos to the engineering claims they support.
 
 ## 1. Final System Overview
 
@@ -50,13 +50,22 @@ Together, the first two UART screenshots are the primary evidence for the intend
 - [`images/dht11/01-dht11-and-oled-running.jpg`](../images/dht11/01-dht11-and-oled-running.jpg) — DHT11 and OLED operating together
 - [`images/dht11/04-dht11-uart-readings.png`](../images/dht11/04-dht11-uart-readings.png) — UART temperature/humidity readings
 
-## 8. Relay Driver
+## 8. LM2596 Supply Setup
+
+The power-side voltage was checked before relay/pump integration rather than relying on the module's existing potentiometer setting.
+
+- [`images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg`](../images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg) — four-cell AA battery pack measured at approximately 5.72 V
+- [`images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg`](../images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg) — LM2596 output adjusted and verified at 5.00 V with a digital multimeter
+
+These photographs support the documented power-stage setup sequence: measure source voltage, connect the buck converter, adjust the regulator while monitoring its output, and only then connect the relay/pump circuitry.
+
+## 9. Relay Driver
 
 - [`images/relay-driver/03-bc337-resistor-network-close-up.jpg`](../images/relay-driver/03-bc337-resistor-network-close-up.jpg) — BC337/resistor network
 - [`images/relay-driver/06-relay-driver-integrated-view.jpg`](../images/relay-driver/06-relay-driver-integrated-view.jpg) — integrated relay-driver view
 - [`images/relay-driver/07-relay-switching-test-frame.jpg`](../images/relay-driver/07-relay-switching-test-frame.jpg) — frame captured from relay-switching validation video
 
-## 9. Power Subsystem and Noise Mitigation
+## 10. Power Subsystem and Noise Mitigation
 
 - [`images/power-subsystem/10-power-subsystem-complete-view.jpg`](../images/power-subsystem/10-power-subsystem-complete-view.jpg) — complete power subsystem
 - [`images/power-subsystem/12-470uf-capacitor-close-up.jpg`](../images/power-subsystem/12-470uf-capacitor-close-up.jpg) — bulk capacitor close-up
@@ -65,7 +74,7 @@ Together, the first two UART screenshots are the primary evidence for the intend
 - [`images/power-subsystem/17-common-ground-connection-close-up.jpg`](../images/power-subsystem/17-common-ground-connection-close-up.jpg) — common ground connection
 - [`images/power-subsystem/18-power-subsystem-running-frame.jpg`](../images/power-subsystem/18-power-subsystem-running-frame.jpg) — power subsystem running, captured from video
 
-## 10. Troubleshooting Evidence
+## 11. Troubleshooting Evidence
 
 - [`images/troubleshooting/02-pump-safety-off-behavior.png`](../images/troubleshooting/02-pump-safety-off-behavior.png) — safety timeout behavior
 - [`images/troubleshooting/03-temperature-error-and-pump-cycles.png`](../images/troubleshooting/03-temperature-error-and-pump-cycles.png) — temperature/DHT failure during pump-related testing
@@ -75,33 +84,37 @@ Together, the first two UART screenshots are the primary evidence for the intend
 
 These images document why filtering, confirmation counters, power suppression components, grounding changes, and physical subsystem separation were introduced.
 
-## 11. Component Reference Images
+## 12. Component Reference Images
 
 The `images/components/` directory contains individual reference photographs for the LaunchPad, OLED, DHT11, soil sensor, LDR, relay, BC337, LM2596, pump, diode, resistors, capacitors, and battery holder.
 
-## 12. Video Tests
-
-GitHub repository file pages are not a dependable in-browser player for these larger committed MP4s. Each link below therefore points directly to the raw media file, which a browser will either play or download depending on browser settings.
+## 13. Video Tests
 
 ### Final demonstration
 
-- [Final irrigation demonstration — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4)
+**Primary final demo:** [open `01-final-irrigation-demo.mp4`](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4)
+
+Repository path:
+
+```text
+videos/final-demo/01-final-irrigation-demo.mp4
+```
 
 ### Subsystem / integration recordings
 
-- [Soil-moisture / water test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/01-soil-moisture-water-test.mp4)
-- [OLED and sensor subsystem test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
-- [Relay-driver switching test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4)
-- [Pump and display integration test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4)
-- [Sensitive-subsystem soil test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
-- [Integrated system control test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4)
+- [Soil-moisture / water test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/01-soil-moisture-water-test.mp4)
+- [OLED and sensor subsystem test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
+- [Relay-driver switching test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4)
+- [Pump and display integration test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4)
+- [Sensitive-subsystem soil test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
+- [Integrated system control test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4)
 
-The MP4 files are repository-optimized copies. The original 4K MOV recordings should remain in the local project archive.
+GitHub may play a raw MP4 in the browser or download it depending on the browser and GitHub response behavior. The MP4 files are repository-optimized copies; the original high-resolution recordings remain part of the local project archive.
 
-## 13. Full Media Inventory
+## 14. Full Media Inventory
 
 Every retained image and video is catalogued in [`media-inventory.md`](media-inventory.md). This evidence index intentionally stays shorter and focuses on the strongest engineering evidence.
 
-## 14. Documentation Use
+## 15. Documentation Use
 
-When a still image was extracted from a project video, it should be described in formal documentation as a **frame captured from the system validation video** rather than as a separately photographed test image.
+When a still image was extracted from a project video, it is described as a **frame captured from the system validation video** rather than as a separately photographed test image.
