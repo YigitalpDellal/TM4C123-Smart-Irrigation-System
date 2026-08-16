@@ -4,13 +4,13 @@
 
 This project presents a smart irrigation controller developed with the Texas Instruments EK-TM4C123GXL Tiva C LaunchPad. The system measures soil moisture, ambient light, temperature, and humidity, displays the values on an SSD1306 OLED, transmits diagnostic information over UART, and automatically controls a DC water pump through a relay interface.
 
-The final design combines analog and digital sensing, I2C, UART, GPIO control, timer-based supervision, ADC filtering, hysteresis, multi-sample confirmation, safety shutdown, manual user control, and motor-noise mitigation. A major part of the development involved diagnosing motor-induced interference that affected the OLED, DHT11, and soil ADC measurements. The final hardware was rebuilt as two physically separated subsystems, which significantly improved stability.
+The final design combines analog and digital sensing, I2C, UART, GPIO control, timer-based supervision, ADC filtering, hysteresis, multi-sample confirmation, safety shutdown, manual user control, regulated pump-side power, and motor-noise mitigation. A major part of the development involved diagnosing motor-induced interference that affected the OLED, DHT11, and soil ADC measurements. The final hardware was rebuilt as two physically separated subsystems, which significantly improved stability.
 
 ## 1. Introduction
 
 Automatic irrigation is a useful embedded-systems application because it requires sensing, decision-making, actuator control, power management, and user feedback in a single closed-loop system.
 
-The project was designed as an extension of an earlier environmental monitoring platform based on the same TM4C123 LaunchPad. The new objective was to turn sensor measurements into a real control action by adding soil-moisture sensing and an electrically isolated pump power path.
+The project was designed as an extension of an earlier environmental monitoring platform based on the same TM4C123 LaunchPad. The new objective was to turn sensor measurements into a real control action by adding soil-moisture sensing and a separately powered pump path.
 
 ## 2. Objectives
 
@@ -25,6 +25,7 @@ The system was required to:
 - avoid rapid pump switching around a threshold
 - prevent unlimited pump runtime
 - allow manual START/STOP control
+- provide a verified regulated supply for the relay/pump side
 - remain stable while the motor is operating
 
 ## 3. Hardware
@@ -43,12 +44,13 @@ The system was required to:
 
 ### Actuator and Power Stage
 
+- four-cell AA battery holder
+- LM2596 buck converter
 - DC water pump
 - relay module
 - BC337 NPN transistor
 - 1 kΩ base resistor
 - 10 kΩ pull-up resistor
-- LM2596 buck converter
 - 1N4007 diode
 - 100 nF ceramic capacitor
 - 470 µF electrolytic capacitor
@@ -136,7 +138,32 @@ no flow control
 
 UART was used both as an output interface and as the primary diagnostic tool throughout development.
 
-## 10. Relay Driver Design
+## 10. Pump-Side Supply Setup
+
+The relay and pump subsystem is powered from a four-cell AA battery holder through an LM2596 buck converter.
+
+The supply was checked before the relay and motor were connected. A digital multimeter measured the battery pack at approximately **5.72 V**. The LM2596 was then connected, and its adjustment potentiometer was turned while monitoring the output until the converter produced **5.00 V**.
+
+```text
+4 x AA battery pack
+        |
+        v
+   LM2596 input
+        |
+   adjusted output
+        |
+        +---- 5.00 V -> relay/pump-side circuit
+        +---- GND    -> LM2596 OUT-
+```
+
+This step removed one variable from later debugging. Relay and pump tests were performed only after the power-side voltage had been measured rather than assumed.
+
+Evidence:
+
+- [`images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg`](../images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg)
+- [`images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg`](../images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg)
+
+## 11. Relay Driver Design
 
 A BC337 interface was used between PB0 and the relay module.
 
@@ -149,7 +176,7 @@ LM2596 OUT+ -> 10 kΩ -> Relay IN
 
 This provides a controlled interface between the 3.3 V microcontroller signal and the relay input stage.
 
-## 11. Pump Power Path
+## 12. Pump Power Path
 
 The pump is powered through the relay's normally-open contact:
 
@@ -161,7 +188,7 @@ Pump - -> LM2596 OUT-
 
 The normally-open contact ensures that the pump is disconnected when the relay is not energized.
 
-## 12. Control Algorithm
+## 13. Control Algorithm
 
 The final irrigation algorithm uses both hysteresis and confirmation counters.
 
@@ -185,13 +212,13 @@ The condition must remain true for three consecutive samples before the pump is 
 
 The difference between 35% and 50% prevents rapid switching around a single threshold.
 
-## 13. ADC Filtering
+## 14. ADC Filtering
 
 Pump operation caused transient soil readings during early testing. The final implementation averages 16 ADC samples before calculating percentages.
 
 This was combined with consecutive-sample confirmation because averaging alone could not guarantee that one disturbed measurement would never affect the control decision.
 
-## 14. Pump Safety Timeout
+## 15. Pump Safety Timeout
 
 The pump has a maximum continuous runtime of 20 seconds.
 
@@ -201,7 +228,7 @@ The pump has a maximum continuous runtime of 20 seconds.
 
 The safety timeout is not the normal irrigation stop mechanism. It is only used if the soil does not reach the wet threshold in time.
 
-## 15. SW1 Manual Control
+## 16. SW1 Manual Control
 
 The system originally enabled automatic irrigation immediately after startup. This made controlled demonstrations difficult and reduced operator control.
 
@@ -215,7 +242,7 @@ Second press -> STOP and reset
 
 While stopped, sensor monitoring, OLED output, and UART remain active.
 
-## 16. Motor Noise and EMI Problems
+## 17. Motor Noise and EMI Problems
 
 The pump integration produced the most significant technical challenge.
 
@@ -229,7 +256,7 @@ Observed problems included:
 
 These symptoms appeared mainly when the motor started or ran.
 
-## 17. Hardware Noise Mitigation
+## 18. Hardware Noise Mitigation
 
 The final power path includes:
 
@@ -245,7 +272,7 @@ A 100 nF ceramic capacitor is connected across the pump terminals to reduce high
 
 A 470 µF electrolytic capacitor is connected across LM2596 OUT+ and OUT- to reduce supply disturbances.
 
-## 18. Grounding and Physical Layout
+## 19. Grounding and Physical Layout
 
 As the original prototype evolved, multiple ground and power paths accumulated on the breadboard. Removing some redundant ground paths improved the OLED, suggesting that the physical return-current layout was contributing to the problem.
 
@@ -264,7 +291,8 @@ LDR divider
 ### Power Subsystem
 
 ```text
-LM2596
+Battery pack
+LM2596 regulated to 5.00 V
 BC337
 Relay
 Pump
@@ -275,7 +303,7 @@ Pump
 
 The two sides share the required PB0 control signal and one common reference connection.
 
-## 19. Troubleshooting Process
+## 20. Troubleshooting Process
 
 The project did not reach the final configuration in one step. Important development failures included:
 
@@ -293,10 +321,12 @@ The project did not reach the final configuration in one step. Important develop
 
 The complete troubleshooting history is documented in `docs/troubleshooting.md`.
 
-## 20. Test Results
+## 21. Test Results
 
 The final prototype successfully demonstrated:
 
+- measured battery-pack voltage before regulation
+- LM2596 output adjusted and verified at 5.00 V
 - stable soil measurement
 - stable light measurement
 - valid temperature and humidity monitoring
@@ -313,7 +343,7 @@ The final prototype successfully demonstrated:
 
 Detailed results are available in `docs/test-results.md`.
 
-## 21. Limitations
+## 22. Limitations
 
 - DHT11 accuracy and update speed are limited.
 - Soil-sensor calibration depends on the specific probe and soil conditions.
@@ -324,7 +354,7 @@ Detailed results are available in `docs/test-results.md`.
 - No historical data logging is implemented.
 - No wireless connectivity is included.
 
-## 22. Future Improvements
+## 23. Future Improvements
 
 Potential extensions include:
 
@@ -342,10 +372,10 @@ Potential extensions include:
 - RTC-based irrigation schedules
 - current sensing for pump fault detection
 
-## 23. Conclusion
+## 24. Conclusion
 
-The final system demonstrates a complete embedded closed-loop application on the TM4C123 platform. It integrates analog sensors, a timing-sensitive digital sensor, I2C display communication, UART debugging, GPIO control, relay/pump actuation, safety logic, filtering, and manual control.
+The final system demonstrates a complete embedded closed-loop application on the TM4C123 platform. It integrates analog sensors, a timing-sensitive digital sensor, I2C display communication, UART debugging, GPIO control, regulated pump-side power, relay/pump actuation, safety logic, filtering, and manual control.
 
-The most important engineering result was not merely that the pump could be switched. The project demonstrated how actuator integration can introduce electrical and software-level failures into otherwise working sensor electronics, and how those failures can be isolated through UART diagnostics, filtering, hardware suppression, grounding changes, and physical subsystem separation.
+The most important engineering result was not merely that the pump could be switched. The project demonstrated how actuator integration can introduce electrical and software-level failures into otherwise working sensor electronics, and how those failures can be isolated through UART diagnostics, measured supply verification, filtering, hardware suppression, grounding changes, and physical subsystem separation.
 
 The final rebuilt prototype operates as a stable smart irrigation demonstrator and provides a reproducible record of the development and troubleshooting process.
