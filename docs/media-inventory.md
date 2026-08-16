@@ -2,7 +2,7 @@
 
 This file lists every image currently retained in the repository and explains what each file is intended to document. The shorter [`media-evidence.md`](media-evidence.md) file contains only the strongest evidence used to support engineering claims; this inventory is the exhaustive archive index.
 
-Current repository image count: **99 files**.
+Current repository image count: **101 files**.
 
 ## 1. Component Reference Images
 
@@ -92,6 +92,8 @@ Current repository image count: **99 files**.
 | [`power-subsystem/16-power-subsystem-alternate-view.jpg`](../images/power-subsystem/16-power-subsystem-alternate-view.jpg) | Alternate view of the completed power subsystem. |
 | [`power-subsystem/17-common-ground-connection-close-up.jpg`](../images/power-subsystem/17-common-ground-connection-close-up.jpg) | Deliberate common-ground/reference connection between sensitive and power sides. |
 | [`power-subsystem/18-power-subsystem-running-frame.jpg`](../images/power-subsystem/18-power-subsystem-running-frame.jpg) | Frame captured from video showing the power subsystem operating. |
+| [`power-subsystem/19-lm2596-output-adjustment-5v72.jpg`](../images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg) | Four-cell AA battery pack measured at approximately 5.72 V before LM2596 regulation. |
+| [`power-subsystem/20-lm2596-output-adjustment-5v00.jpg`](../images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg) | LM2596 output adjusted with its trimmer and verified at 5.00 V using a digital multimeter. |
 
 ## 7. Pump Images
 
