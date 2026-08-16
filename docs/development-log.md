@@ -28,7 +28,20 @@ This separated the start and stop conditions and prevented repeated switching ar
 
 A maximum pump runtime was also added as a safety feature.
 
-## Phase 3 - Relay Integration
+## Phase 3 - Pump-Side Supply Setup
+
+Before the relay and pump were integrated, the power-side supply was measured and adjusted.
+
+The four-cell AA battery pack measured approximately **5.72 V** with a digital multimeter. The pack was connected to the LM2596 input, the multimeter was moved to the converter output, and the LM2596 adjustment potentiometer was turned until the output reached **5.00 V**.
+
+This step was completed before relay and motor debugging so the power-stage supply was a known value rather than another unknown variable.
+
+Evidence:
+
+- `images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg`
+- `images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg`
+
+## Phase 4 - Relay Integration
 
 The water pump required switching a separate power path. A relay module was introduced.
 
@@ -45,7 +58,7 @@ LM2596 OUT+ -> 10 kΩ -> Relay IN
 
 The relay was tested independently before the pump was connected.
 
-## Phase 4 - Pump Power Path
+## Phase 5 - Pump Power Path
 
 The pump was wired through the relay's normally-open contact:
 
@@ -57,7 +70,7 @@ Pump - -> LM2596 OUT-
 
 Early wiring tests included silent-pump conditions until the relay contact path was corrected.
 
-## Phase 5 - First Complete Automatic Irrigation Tests
+## Phase 6 - First Complete Automatic Irrigation Tests
 
 The first integrated tests showed that the pump could start and stop, but the control behavior was not yet robust.
 
@@ -71,7 +84,7 @@ Observed behavior included:
 
 These observations showed that a single ADC result could not be trusted while the motor was active.
 
-## Phase 6 - ADC Filtering and Confirmation Logic
+## Phase 7 - ADC Filtering and Confirmation Logic
 
 ADC filtering was strengthened with 16-sample averaging.
 
@@ -84,7 +97,7 @@ The irrigation state transitions were then protected by confirmation counters:
 
 This prevented isolated spikes from immediately changing the pump state.
 
-## Phase 7 - Safety Timeout Refinement
+## Phase 8 - Safety Timeout Refinement
 
 A 10-second safety timeout was useful for early bench tests but too short for realistic soil wetting.
 
@@ -101,7 +114,7 @@ Moisture target = normal stop
 20-second limit = emergency protection
 ```
 
-## Phase 8 - Motor-Induced Display and Sensor Problems
+## Phase 9 - Motor-Induced Display and Sensor Problems
 
 Once the pump was connected, the most difficult stage of the project began.
 
@@ -116,7 +129,7 @@ Observed failures included:
 
 The fact that UART continued running during some OLED failures showed that the MCU had not completely crashed. The problem was localized to the sensitive peripheral/power environment.
 
-## Phase 9 - Software Recovery Experiments
+## Phase 10 - Software Recovery Experiments
 
 Firmware changes were tested to make DHT11 and OLED operation more fault tolerant.
 
@@ -130,7 +143,7 @@ Useful software changes included:
 
 An aggressive I2C/OLED recovery attempt did not improve the system and was removed. This was an important diagnostic result: the root problem could not be solved purely in software.
 
-## Phase 10 - Hardware EMI Mitigation
+## Phase 11 - Hardware EMI Mitigation
 
 The pump path was modified with suppression and filtering components:
 
@@ -142,13 +155,13 @@ The pump path was modified with suppression and filtering components:
 
 These changes reduced disturbances, but some OLED effects remained in the increasingly complex breadboard arrangement.
 
-## Phase 11 - Grounding Investigation
+## Phase 12 - Grounding Investigation
 
 Removing redundant ground paths improved OLED behavior. This indicated that return-current routing and common-ground layout were significant contributors.
 
 The prototype had accumulated many jumper paths as components were added incrementally. At this stage it became more efficient to rebuild the hardware than to continue modifying the existing layout.
 
-## Phase 12 - Two-Breadboard Rebuild
+## Phase 13 - Two-Breadboard Rebuild
 
 The system was rebuilt from scratch as two physically separated subsystems.
 
@@ -165,7 +178,8 @@ LDR + 10 kΩ divider
 ### Breadboard 2 - Power / Pump Driver
 
 ```text
-LM2596
+4 x AA battery pack
+LM2596 adjusted to 5.00 V
 BC337
 1 kΩ
 10 kΩ
@@ -180,7 +194,7 @@ The two sides were connected only by the required PB0 control path and common gr
 
 This rebuild was the decisive hardware improvement. OLED stability and overall system behavior became significantly better.
 
-## Phase 13 - Final Soil Test
+## Phase 14 - Final Soil Test
 
 The soil probe was inserted into real soil and the pump outlet was positioned away from the probe so the sensor would measure actual soil wetting rather than a direct water stream.
 
@@ -196,7 +210,7 @@ dry confirmation
 
 The safety timeout remains available if the wet target is not reached within 20 seconds.
 
-## Phase 14 - Demo Control with SW1
+## Phase 15 - Demo Control with SW1
 
 For a clean project demonstration, automatic irrigation was changed so it no longer starts immediately after power-up.
 
@@ -212,12 +226,13 @@ Sensors, OLED, and UART continue operating while the system is in STOP mode.
 
 This allowed the final demonstration video to begin in a stable observable state and start irrigation only when commanded.
 
-## Phase 15 - Final Documentation and Evidence
+## Phase 16 - Final Documentation and Evidence
 
 Hardware photos were organized into component, subsystem, troubleshooting, UART, and final-system categories.
 
 The final documentation records both successful implementation and the engineering failures that shaped the design, especially:
 
+- measured LM2596 supply setup
 - relay-interface development
 - pump contact wiring
 - ADC instability
