@@ -19,6 +19,8 @@ This document summarizes the verification performed on the final TM4C123 Smart I
 | LDR ADC reading | ADC value changes with illumination | Passed |
 | Light percentage | Calibrated light response | Passed |
 | ADC averaging | Reduced sample-to-sample fluctuation | Passed |
+| Battery-pack measurement | Input supply measured before regulator setup | Passed: ~5.72 V |
+| LM2596 output adjustment | Regulated output set before power-stage integration | Passed: 5.00 V |
 | Relay driver | PB0 controls relay through BC337 stage | Passed |
 | Relay default state | Pump path open when relay inactive | Passed |
 | Pump operation | Pump runs when relay is activated | Passed |
@@ -34,6 +36,23 @@ This document summarizes the verification performed on the final TM4C123 Smart I
 | Two-subsystem layout | Sensitive and power circuits operate together | Passed |
 | Common ground reference | PB0 driver works with shared reference | Passed |
 | Real soil irrigation | Soil probe responds during watering | Passed |
+
+## LM2596 Supply Verification
+
+The power-side supply was checked before the relay and pump stage was connected. A digital multimeter was used for both measurements.
+
+1. The four-cell AA battery pack was measured at approximately **5.72 V**.
+2. The battery pack was connected to the LM2596 input.
+3. The multimeter was moved to the LM2596 output terminals.
+4. The module's adjustment potentiometer was turned until the output reached **5.00 V**.
+5. The 5.00 V output was rechecked before the relay and pump circuitry was integrated.
+
+This removed the supply voltage as an unknown during the later relay and motor troubleshooting.
+
+Evidence:
+
+- [`images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg`](../images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg) — battery-pack measurement, approximately 5.72 V
+- [`images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg`](../images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg) — regulated LM2596 output, 5.00 V
 
 ## Soil Moisture Calibration
 
