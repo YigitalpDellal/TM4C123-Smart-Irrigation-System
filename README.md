@@ -1,16 +1,30 @@
 # TM4C123 Smart Irrigation System
 
-A complete embedded smart-irrigation prototype built around the Texas Instruments **EK-TM4C123GXL Tiva C LaunchPad**. The project combines analog sensing, timing-sensitive digital sensing, I2C display output, UART diagnostics, relay/pump actuation, filtering, hysteresis, safety supervision, operator control, and motor-noise mitigation in one closed-loop system.
+A closed-loop irrigation controller built around the Texas Instruments **EK-TM4C123GXL Tiva C LaunchPad**. The system measures soil moisture, ambient light, temperature, and humidity; displays live status on an SSD1306 OLED; streams diagnostics over UART; and controls a DC water pump through a BC337-driven relay stage.
 
-The repository is intentionally documented as an **engineering build record**, not only as a final showcase. It explains how the system is wired, how the firmware works, what failed during development, why each failure occurred, how it was corrected, and how the final behavior was verified.
+This repository records the complete build process, including the failures that appeared when the motor was integrated and the changes that were required to make the final prototype stable.
 
 <p align="center">
   <img src="images/final-system/01-final-system-hero-view.jpg" width="86%" alt="Final TM4C123 smart irrigation system">
 </p>
 
+## Final Demo
+
+The main demonstration recording is kept at:
+
+[`videos/final-demo/01-final-irrigation-demo.mp4`](videos/final-demo/01-final-irrigation-demo.mp4)
+
+<p align="center">
+<a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4">
+  <img src="images/final-system/09-complete-irrigation-setup-with-reservoir.jpg" width="72%" alt="Open final irrigation demonstration">
+</a>
+</p>
+
+**Click the image above to open the final irrigation demonstration.** Depending on the browser, GitHub may play the raw MP4 directly or download it.
+
 ---
 
-## 1. What the System Does
+## 1. System Overview
 
 The controller continuously monitors:
 
@@ -19,14 +33,12 @@ The controller continuously monitors:
 - temperature and humidity through a **DHT11 on PA2**
 - operator START/STOP input through **SW1 / PF4**
 
-It presents the current state on:
+It reports the current state through:
 
 - an **SSD1306 OLED over I2C0**
 - **UART0 at 115200 8N1**
 
-When automatic control is enabled with SW1, the controller decides whether to run a DC water pump. The pump is not driven directly by the microcontroller. PB0 drives a **BC337 transistor interface**, which controls a relay that switches the pump power path.
-
-### Final control behavior
+When automatic control is enabled with SW1, the controller evaluates the soil reading and decides whether the pump should run.
 
 ```text
 Power ON
@@ -53,7 +65,7 @@ Second SW1 press
 System STOP + Pump OFF + state reset
 ```
 
-The **35% start** and **50% stop** thresholds create hysteresis. The three-sample confirmation requirement prevents one disturbed ADC sample from immediately changing the pump state.
+The separate 35% start and 50% stop thresholds provide hysteresis. The three-sample confirmation requirement prevents one disturbed measurement from immediately changing the pump state.
 
 ---
 
@@ -64,49 +76,47 @@ The **35% start** and **50% stop** thresholds create hysteresis. The three-sampl
 | [`source/main.c`](source/main.c) | Final readable application source |
 | [`firmware/irrigation_system/`](firmware/irrigation_system/) | Importable Code Composer Studio project |
 | [`docs/project-report.md`](docs/project-report.md) | Full engineering report |
-| [`docs/hardware-connections.md`](docs/hardware-connections.md) | Final verified wiring |
-| [`docs/build-and-run.md`](docs/build-and-run.md) | CCS import, build, flash and UART setup |
+| [`docs/hardware-connections.md`](docs/hardware-connections.md) | Final verified wiring and power setup |
+| [`docs/build-and-run.md`](docs/build-and-run.md) | CCS import, build, flash, and UART setup |
 | [`docs/test-results.md`](docs/test-results.md) | Final verification results |
-| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Detailed problem → cause → fix history |
-| [`docs/troubleshooting-audit.md`](docs/troubleshooting-audit.md) | Coverage check for all retained failures |
+| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Detailed failure and correction history |
+| [`docs/troubleshooting-audit.md`](docs/troubleshooting-audit.md) | Troubleshooting coverage audit |
 | [`docs/development-log.md`](docs/development-log.md) | Chronological development progression |
 | [`docs/user-manual.md`](docs/user-manual.md) | Operating instructions |
-| [`docs/media-evidence.md`](docs/media-evidence.md) | Engineering-claim-to-media mapping |
-| [`docs/media-inventory.md`](docs/media-inventory.md) | Complete 99-image archive index |
-
-The README deliberately uses only the strongest visual evidence. The full image archive remains available through the media inventory so the technical explanation does not collapse into a wall of photographs.
+| [`docs/media-evidence.md`](docs/media-evidence.md) | Engineering claim-to-media mapping |
+| [`docs/media-inventory.md`](docs/media-inventory.md) | Complete image and video archive index |
 
 ---
 
-## 3. Hardware Used
+## 3. Hardware
 
-### Controller and sensing
+### Controller and sensors
 
 - EK-TM4C123GXL LaunchPad / TM4C123GH6PM
 - resistive soil-moisture probe and analog interface module
-- LDR photoresistor
-- 10 kΩ resistor for the LDR divider
+- LDR photoresistor + 10 kΩ divider resistor
 - DHT11 temperature/humidity sensor
 - SSD1306 I2C OLED
 
 ### Pump and power stage
 
-- DC water pump
-- relay module
+- four-cell AA battery holder
+- LM2596 buck converter
 - BC337 NPN transistor
 - 1 kΩ base resistor
 - 10 kΩ relay-input pull-up resistor
-- LM2596 buck converter
+- relay module
+- DC water pump
 - 1N4007 diode
 - 100 nF ceramic capacitor
 - 470 µF electrolytic capacitor
 
 <p align="center">
-  <img src="images/sensitive-subsystem/01-sensitive-subsystem-running.jpg" width="46%" alt="Sensitive subsystem">
-  <img src="images/power-subsystem/10-power-subsystem-complete-view.jpg" width="46%" alt="Power subsystem">
+  <img src="images/sensitive-subsystem/01-sensitive-subsystem-running.jpg" width="46%" alt="Sensitive electronics subsystem">
+  <img src="images/power-subsystem/10-power-subsystem-complete-view.jpg" width="46%" alt="Power and pump subsystem">
 </p>
 
-The final hardware is split into two physical sections because motor current and switching noise caused repeated problems when the sensitive electronics and pump circuitry were mixed into the same evolving breadboard layout.
+The final prototype uses two physical subsystems because motor current and switching noise repeatedly disturbed the OLED, DHT11, and analog measurements when everything was accumulated on the earlier shared breadboard layout.
 
 ---
 
@@ -126,11 +136,11 @@ The final hardware is split into two physical sections because motor current and
 
 ---
 
-# 5. Build the Hardware
+# 5. Hardware Build
 
-The safest way to reproduce the prototype is to build and verify it in stages instead of wiring the entire system at once. That staged approach is important because several failures in this project became much harder to diagnose only after the motor was introduced.
+The project is much easier to reproduce if each subsystem is verified before the next one is added.
 
-## 5.1 Build the sensitive-electronics subsystem first
+## 5.1 Sensitive electronics
 
 ### OLED
 
@@ -141,7 +151,7 @@ OLED SCL -> PB2 / I2C0SCL
 OLED SDA -> PB3 / I2C0SDA
 ```
 
-The OLED address used by the firmware is:
+Firmware address:
 
 ```c
 #define OLED_ADDRESS 0x3CU
@@ -159,7 +169,7 @@ DHT11 + -> Tiva 3.3 V
 DHT11 - -> Tiva GND
 ```
 
-### Soil-moisture sensor
+### Soil sensor
 
 ```text
 Soil VCC -> Tiva 3.3 V
@@ -168,7 +178,7 @@ Soil AO  -> PE3 / AIN0
 Soil DO  -> not connected
 ```
 
-Only the **analog output** is used.
+Only the analog output is used.
 
 <p align="center">
   <img src="images/soil-sensor/01-soil-sensor-interface-wiring.jpg" width="46%" alt="Soil sensor wiring">
@@ -189,13 +199,45 @@ Tiva 3.3 V
   GND
 ```
 
-The LDR, the PE2 jumper, and the upper side of the 10 kΩ resistor meet at the same midpoint node.
+The LDR, PE2 jumper, and one side of the 10 kΩ resistor meet at the same midpoint node.
 
----
+## 5.2 Set the LM2596 output before connecting the power stage
 
-## 5.2 Build and test the relay driver without the pump
+The relay/pump side is supplied from a four-cell AA battery pack through the LM2596 buck converter.
 
-The relay was not left directly on the 3.3 V GPIO interface. The final verified driver is:
+The regulator was not connected to the rest of the power stage with an unknown output setting. The supply was checked first with a digital multimeter:
+
+1. The four-cell AA battery pack was measured at approximately **5.72 V**.
+2. The pack was connected to the LM2596 input.
+3. The multimeter was connected across LM2596 OUT+ and OUT-.
+4. The onboard adjustment potentiometer was turned while watching the meter.
+5. Adjustment stopped when the converter output reached **5.00 V**.
+6. Only after that measurement was the relay/pump circuitry connected.
+
+```text
+4 x AA battery pack (~5.72 V measured)
+              |
+              v
+         LM2596 input
+              |
+        buck conversion
+              |
+        +-----+-----+
+        |           |
+      OUT+         OUT-
+      5.00 V       GND
+```
+
+<p align="center">
+  <img src="images/power-subsystem/19-lm2596-output-adjustment-5v72.jpg" width="44%" alt="Battery pack measured at approximately 5.72 V">
+  <img src="images/power-subsystem/20-lm2596-output-adjustment-5v00.jpg" width="44%" alt="LM2596 output adjusted to 5.00 V">
+</p>
+
+This measurement matters because it removes the supply voltage as an unknown during relay and motor debugging. The 5 V rail was measured, not assumed.
+
+## 5.3 BC337 relay driver
+
+The relay input is controlled through a BC337 transistor stage:
 
 ```text
 PB0 -> 1 kΩ -> BC337 Base
@@ -212,22 +254,15 @@ Relay GND -> LM2596 OUT-
 Relay IN  -> BC337 Collector node
 ```
 
-Why the resistors are there:
-
-- **1 kΩ** limits BC337 base current.
-- **10 kΩ** provides the relay-input pull-up used by the final driver arrangement.
+The 1 kΩ resistor limits base current. The 10 kΩ resistor provides the relay-input pull-up used in the final arrangement.
 
 <p align="center">
-  <img src="images/relay-driver/03-bc337-resistor-network-close-up.jpg" width="52%" alt="BC337 relay driver resistor network">
+  <img src="images/relay-driver/03-bc337-resistor-network-close-up.jpg" width="54%" alt="BC337 relay driver resistor network">
 </p>
 
-Before attaching the pump, verify that PB0 changes the relay LED/mechanical state repeatedly and that the transistor does not show abnormal heating.
+The relay should be tested repeatedly before the pump is attached. Verify both the status LED/mechanical click and that the transistor does not show abnormal heating.
 
----
-
-## 5.3 Add the pump power path
-
-Final relay-contact wiring:
+## 5.4 Pump contact wiring
 
 ```text
 LM2596 OUT+ -> Relay COM
@@ -235,11 +270,9 @@ Relay NO    -> Pump +
 Pump -      -> LM2596 OUT-
 ```
 
-The **normally-open (NO)** contact is used deliberately. When the relay is inactive, the pump power path is physically open.
+The normally-open contact keeps the pump power path open while the relay is inactive.
 
----
-
-## 5.4 Add motor-noise suppression and supply filtering
+## 5.5 Motor-noise suppression
 
 ### 1N4007 diode
 
@@ -248,15 +281,11 @@ Striped end     -> Pump + / Relay NO side
 Non-striped end -> Pump - / LM2596 OUT-
 ```
 
-The stripe marks the diode cathode. It is reverse-biased during normal pump operation.
-
 ### 100 nF ceramic capacitor
 
 ```text
 Pump + ---- 100 nF ---- Pump -
 ```
-
-This capacitor is non-polarized and is placed across the motor terminals to suppress high-frequency motor noise.
 
 ### 470 µF electrolytic capacitor
 
@@ -265,165 +294,134 @@ This capacitor is non-polarized and is placed across the motor terminals to supp
 470 µF - -> LM2596 OUT-
 ```
 
-Observe capacitor polarity.
-
 <p align="center">
   <img src="images/power-subsystem/13-1n4007-flyback-diode-close-up.jpg" width="30%" alt="1N4007 diode">
-  <img src="images/power-subsystem/14-100nf-ceramic-capacitor-close-up.jpg" width="30%" alt="100 nF capacitor">
-  <img src="images/power-subsystem/12-470uf-capacitor-close-up.jpg" width="30%" alt="470 uF capacitor">
+  <img src="images/power-subsystem/14-100nf-ceramic-capacitor-close-up.jpg" width="30%" alt="100 nF ceramic capacitor">
+  <img src="images/power-subsystem/12-470uf-capacitor-close-up.jpg" width="30%" alt="470 uF electrolytic capacitor">
 </p>
 
----
+## 5.6 Common reference between subsystems
 
-## 5.5 Join the two subsystems with a controlled reference
-
-The sensitive side and the power side still require a common electrical reference so the PB0 control signal is meaningful to the BC337 stage.
-
-Final connection:
+The sensitive side and power side need a common electrical reference for PB0:
 
 ```text
 Tiva GND -> LM2596 OUT-
 ```
 
-The final rebuild intentionally avoided adding multiple unnecessary ground bridges between the two breadboards.
+The final rebuild avoids multiple unnecessary ground bridges between the breadboards.
 
 <p align="center">
-  <img src="images/power-subsystem/17-common-ground-connection-close-up.jpg" width="52%" alt="Common ground connection">
+  <img src="images/power-subsystem/17-common-ground-connection-close-up.jpg" width="54%" alt="Common ground connection">
 </p>
 
----
+## 5.7 Power-up checklist
 
-## 5.6 Power-up checklist
+Before applying power:
 
-Before applying power, verify all of the following:
-
-- no direct short exists between LM2596 OUT+ and OUT-
-- the 470 µF capacitor polarity is correct
-- the 1N4007 stripe is on the pump-positive side
-- relay **COM and NO** are used, not NC
-- pump polarity is correct
-- PB0 reaches the BC337 base only through the 1 kΩ resistor
-- LM2596 OUT+ reaches Relay IN only through the 10 kΩ resistor
-- the sensitive side and the power side share the intended single reference connection
-- OLED, DHT11, soil sensor and LDR remain on the Tiva 3.3 V side
+- verify the battery holder goes to the LM2596 input, not directly to the regulated 5 V nodes
+- measure LM2596 output and confirm approximately 5.00 V
+- check for a short between OUT+ and OUT-
+- check the 470 µF capacitor polarity
+- check the 1N4007 stripe orientation
+- use relay COM and NO, not NC
+- check pump polarity
+- confirm PB0 reaches the BC337 base only through 1 kΩ
+- confirm OUT+ reaches Relay IN only through 10 kΩ
+- keep one deliberate common reference between Tiva GND and LM2596 OUT-
+- keep OLED and sensors on the Tiva 3.3 V side
 
 ---
 
 # 6. Firmware Architecture
 
-The final application is contained in [`source/main.c`](source/main.c). The CCS project retains the original application filename `hello.c` so the tested project metadata remains importable. Both files contain the same final application code.
+The readable application source is [`source/main.c`](source/main.c). The CCS project retains its tested application filename `hello.c`; both contain the same final application code.
 
-## 6.1 Main control constants
+## 6.1 Main constants
 
 ```c
-#define MOISTURE_LOW_THRESHOLD   35U
-#define MOISTURE_HIGH_THRESHOLD  50U
-#define MAX_PUMP_RUNTIME         20U
-#define ADC_SAMPLE_COUNT         16U
-#define DRY_CONFIRM_COUNT         3U
-#define WET_CONFIRM_COUNT         3U
-#define SOIL_DRY_VALUE         4090U
-#define SOIL_WET_VALUE         1650U
-#define DHT_READ_INTERVAL_SECONDS 2U
-#define DHT_MAX_RETRIES           3U
+#define MOISTURE_LOW_THRESHOLD    35U
+#define MOISTURE_HIGH_THRESHOLD   50U
+#define MAX_PUMP_RUNTIME          20U
+#define ADC_SAMPLE_COUNT          16U
+#define DRY_CONFIRM_COUNT          3U
+#define WET_CONFIRM_COUNT          3U
+#define SOIL_DRY_VALUE          4090U
+#define SOIL_WET_VALUE          1650U
+#define DHT_READ_INTERVAL_SECONDS  2U
+#define DHT_MAX_RETRIES            3U
 ```
 
-## 6.2 One-second scheduler
+## 6.2 Timer and main-loop split
 
-Timer0A generates a one-second timing event. The interrupt handler does very little work: it clears the interrupt and raises a flag. Sensor reads, display updates, UART output and pump decisions remain in the main context instead of running inside the ISR.
+Timer0A generates the one-second timing event. Its interrupt handler clears the interrupt and raises a flag. Sensor acquisition, UART output, display updates, and pump decisions remain in the main execution context instead of being performed inside the ISR.
 
-This keeps the interrupt handler short and makes the slower application logic easier to reason about.
+## 6.3 ADC acquisition
 
-## 6.3 ADC sequence and averaging
-
-ADC0 sequencer 2 samples two analog channels:
+ADC0 sequencer 2 samples:
 
 ```text
 Sample 0 -> Soil sensor, PE3 / AIN0
 Sample 1 -> LDR divider,  PE2 / AIN1
 ```
 
-The firmware triggers the sequence **16 times** and averages both channels before percentage conversion. This was added because the pump produced short analog disturbances during development.
-
-Averaging is then combined with confirmation counters. The design does not trust one filtered sample alone to start or stop the pump.
+The firmware performs **16 conversions** and averages both channels before converting them to percentages.
 
 ## 6.4 Soil calibration
-
-Final calibration endpoints:
 
 ```c
 #define SOIL_DRY_VALUE 4090U
 #define SOIL_WET_VALUE 1650U
 ```
 
-Conversion behavior:
-
 ```text
 ADC >= 4090 -> 0%
 ADC <= 1650 -> 100%
-Intermediate values -> linearly mapped percentage
+Intermediate values -> linear calibrated percentage
 ```
 
-Values beyond the measured range are clamped so the displayed result stays within 0–100%.
+Values beyond the calibrated endpoints are clamped to 0–100%.
 
-## 6.5 Hysteresis and confirmation logic
+## 6.5 Irrigation decision logic
 
-### Dry condition
+Dry condition:
 
 ```text
 Soil < 35%
 ```
 
-The condition must remain true for **three consecutive control cycles** before the pump may start.
+Three consecutive dry samples are required before pump start.
 
-### Wet condition
+Wet condition:
 
 ```text
 Soil > 50%
 ```
 
-The condition must remain true for **three consecutive control cycles** before the pump stops normally.
+Three consecutive wet samples are required before normal pump stop.
 
-### Hysteresis band
+Inside the 35–50% hysteresis band, neither confirmation counter is allowed to accumulate.
 
-```text
-35% <= Soil <= 50%
-```
+## 6.6 Safety timeout
 
-Inside this band, neither confirmation counter is allowed to accumulate. This prevents rapid switching when the measurement sits near a threshold.
-
-## 6.6 Pump safety state
-
-The 20-second runtime is a **backup safety mechanism**, not the normal stop target.
-
-Normal stop:
+The 20-second limit is a backup safety mechanism, not the normal target stop.
 
 ```text
-3 confirmed measurements above 50%
+Normal stop -> 3 confirmed measurements above 50%
+Safety stop -> pump continuously active for 20 s
 ```
 
-Safety stop:
+After a safety timeout, the pump remains off until the controller state is reset.
 
-```text
-Pump has been continuously active for 20 s
-```
+## 6.7 DHT11 handling
 
-When the runtime limit is reached, the pump is switched off and the controller enters a latched safety state until the system state is reset through the STOP/START sequence.
+The DHT11 is timing-sensitive. Pump operation caused transient invalid reads during development, so the final firmware:
 
-## 6.7 DHT11 reliability strategy
-
-DHT11 communication is timing-sensitive. During pump integration, transient sensor errors appeared when the motor was active.
-
-The final firmware therefore:
-
-- retries DHT11 reads
+- retries failed DHT11 transactions
 - retains the most recent valid temperature/humidity values
-- performs new DHT11 transactions only while the pump is OFF
+- avoids starting a new DHT11 read while the pump is running
 - reads DHT11 less frequently than the analog channels
 
-This prevents one disturbed read from immediately replacing valid display data with an error state.
-
-## 6.8 SW1 operator control
+## 6.8 SW1 control
 
 PF4 uses the LaunchPad SW1 internal pull-up:
 
@@ -432,21 +430,19 @@ Released -> HIGH
 Pressed  -> LOW
 ```
 
-The firmware uses edge detection and a short software debounce delay.
-
 ```text
 Power-up     -> STOP, pump OFF
-First press  -> RUN, reset control state, begin automatic evaluation
-Second press -> STOP, pump OFF, reset runtime/counters/safety
+First press  -> RUN, automatic control enabled
+Second press -> STOP, pump OFF, counters/runtime/safety reset
 ```
 
-The key point is that **monitoring starts immediately, irrigation does not**. This makes startup safer and makes demonstrations repeatable.
+Sensor monitoring, OLED updates, and UART output remain active in STOP mode.
 
 ---
 
-# 7. OLED and UART Output
+# 7. OLED and UART
 
-The OLED presents:
+The OLED displays:
 
 ```text
 SOIL
@@ -457,7 +453,7 @@ PUMP
 TIME
 ```
 
-Pump-state labels include:
+State labels include:
 
 ```text
 STOP
@@ -467,81 +463,81 @@ SAFETY
 ```
 
 <p align="center">
-  <img src="images/oled/07-final-oled-stop-state-close-up.jpg" width="54%" alt="Final OLED stop state">
+  <img src="images/oled/07-final-oled-stop-state-close-up.jpg" width="54%" alt="Final OLED STOP state">
 </p>
 
-UART0 uses:
+UART configuration:
 
 ```text
-Baud rate:    115200
-Data bits:    8
-Parity:       None
-Stop bits:    1
-Flow control: None
+115200 baud
+8 data bits
+no parity
+1 stop bit
+no flow control
 ```
 
-Example line:
+Example:
 
 ```text
 ADC:2695 | Soil:57% | Light:23% | System:RUN | Pump:OFF | Time:0s | Temp:29C | Hum:32%
 ```
 
-UART became the main diagnostic channel during development because it allowed the controller state to be observed even when the OLED itself was corrupted or frozen.
+UART became the main diagnostic reference during development because it kept exposing controller state even when the OLED itself was corrupted or frozen.
 
 ---
 
-# 8. Development Problems and How They Were Solved
+# 8. Problems Encountered and Corrections
 
-This project did not reach the final configuration in one attempt. The table below summarizes **all major retained engineering problems** from the development history. The detailed chronology and screenshots are in [`docs/troubleshooting.md`](docs/troubleshooting.md).
+The final design was shaped by failures observed during real hardware integration.
 
-| # | Problem / symptom | Cause or diagnostic conclusion | Final correction | How it was verified |
+| # | Problem / symptom | Cause or diagnostic conclusion | Correction | Verification |
 |---|---|---|---|---|
-| 1 | Soil ADC values existed but the displayed percentage was not meaningful | A generic 0–4095 mapping did not represent the physical probe's dry/wet endpoints | Measured dry/wet endpoints were set to **4090 / 1650**, then clamped and mapped to 0–100% | Dry, wet and intermediate UART tests |
-| 2 | Pump logic could become unstable around one threshold | No hysteresis existed | Split the decision into **35% start** and **50% stop** thresholds | Pump stopped chattering around one decision point |
-| 3 | Relay did not behave reliably from the original direct GPIO arrangement | The 3.3 V GPIO was not treated as a clean direct interface to the relay-input stage | Added the **BC337 + 1 kΩ + 10 kΩ** interface | Relay LED, mechanical click and repeated switching matched PB0 state |
-| 4 | Early BC337 tests failed and incorrect configurations caused abnormal transistor heating | Base/collector/emitter and resistor nodes were not yet wired in the final verified topology | Rebuilt the transistor stage and checked pin orientation before repowering | Repeated relay switching without abnormal transistor behavior |
-| 5 | Relay clicked but the pump stayed silent or did not follow the intended normally-off behavior | Relay power contacts were wired incorrectly during early tests | Finalized `OUT+ -> COM`, `NO -> Pump+`, `Pump- -> OUT-` | Pump followed relay ON/OFF state correctly |
-| 6 | Safety timeout behavior was being treated too much like a normal irrigation stop | Control intent was not yet separated into normal and emergency termination | Defined **wet confirmation as normal stop** and runtime limit only as fail-safe | UART distinguishes normal OFF from `SAFETY OFF` |
-| 7 | Initial **10 s** safety timeout stopped the pump too early | Ten seconds was useful for bench testing but too restrictive for realistic wetting | Final timeout changed to **20 s** | System retained protection while allowing longer watering |
-| 8 | Pump stopped/restarted after sudden soil-value jumps | Motor operation disturbed the analog measurement path | Added **16-sample ADC averaging** plus **3-sample dry/wet confirmation** | Single spikes no longer directly changed pump state |
-| 9 | OLED showed corrupted text, missing lines and damaged content during pump operation | Motor startup/switching introduced electrical noise and supply disturbance into the sensitive I2C/display environment | Added diode, 100 nF motor capacitor, 470 µF bulk capacitor, physical separation and simplified grounding | Final rebuilt system maintained stable OLED output |
-| 10 | DHT11 produced `TEMP: ERR` / invalid data around pump operation | Timing-sensitive DHT11 communication was vulnerable to disturbed electrical conditions | Added retries, retained last-valid values and skipped DHT reads while pump was active | Final display/UART retained valid environmental values more consistently |
-| 11 | OLED froze at an old soil value while UART continued changing | MCU/control loop was still alive; failure was localized to OLED/I2C/power environment rather than total firmware crash | Used UART to isolate the fault, then fixed power/layout instead of treating it as a CPU crash | Final OLED resumed continuous updates after rebuild |
-| 12 | Automatic I2C/OLED recovery experiment made behavior worse or failed to help | Root cause was primarily electrical, so aggressive software recovery only increased complexity | Removed the recovery experiment and returned to the simpler known-good I2C implementation | Simple implementation worked after electrical fixes |
-| 13 | Some OLED labels/characters appeared incomplete | Custom 5x7 font did not contain every character introduced by intermediate UI text | Restricted strings to supported glyphs or added the required characters | Final `SOIL`, `TEMP`, `HUM`, `LIGHT`, `PUMP`, `STOP`, `ON`, `OFF`, `SAFETY`, `TIME` labels display correctly |
-| 14 | CCS reported many duplicate function definitions and multiple `main()` errors | A complete revised source implementation had been pasted below the previous full implementation | Removed the duplicated half and restored one definition of every function and one `main()` | Duplicate-definition errors disappeared |
-| 15 | A large compiler error cascade appeared after an earlier syntax problem | Parser context had already been lost, so later diagnostics were partly secondary symptoms | Fixed the earliest syntax/context problem first, then the true duplicate definitions | Project returned to a normal build state |
-| 16 | OLED behavior improved when some redundant ground connections were removed | Pump current and sensitive return paths had become mixed through an increasingly complex breadboard ground network | Simplified the return-current structure and kept one deliberate shared reference between subsystems | OLED stability improved significantly |
-| 17 | Incremental breadboard modifications became too difficult to reason about | Too many accumulated jumpers and shared paths made the remaining noise problem hard to isolate | Rebuilt the hardware from scratch as **two breadboards: sensitive + power** | Rebuilt system operated with stable OLED and correct pump behavior |
-| 18 | Automatic irrigation started as soon as the board powered up | Original firmware enabled control immediately, reducing operator control and making demonstrations awkward | Added **SW1 / PF4 START-STOP** logic; startup now remains in STOP mode | Final demo can be started deliberately with one button press |
-| 19 | A single successful subsystem test was not enough to prove the final system | Failures had appeared only when subsystems interacted | Defined a complete integrated test covering OLED, UART, DHT11, soil, LDR, relay, pump, timeout, SW1 and EMI behavior | Final integrated functional test passed |
+| 1 | Soil ADC values did not translate into a meaningful percentage | Generic ADC mapping did not match the physical probe | Measured dry/wet endpoints: 4090 / 1650 | Dry, intermediate, and wet UART tests |
+| 2 | Pump decision was unstable around one threshold | No hysteresis | 35% start and 50% stop thresholds | Stable transition band |
+| 3 | Relay did not behave reliably from the original GPIO arrangement | Relay input needed a controlled interface | Added BC337, 1 kΩ, and 10 kΩ stage | Repeated relay switching |
+| 4 | Early BC337 tests failed and transistor behavior was abnormal | Incorrect transistor/resistor node wiring | Rebuilt base/collector/emitter topology | Relay switched without abnormal heating |
+| 5 | Relay clicked but pump was silent or default behavior was wrong | Incorrect relay contact wiring | OUT+ → COM, NO → Pump+, Pump- → OUT- | Pump followed relay state |
+| 6 | Runtime timeout was being treated like the normal irrigation stop | Normal and emergency termination were not separated | Wet confirmation became normal stop; timeout became fail-safe | UART distinguishes OFF and SAFETY OFF |
+| 7 | Initial 10 s safety limit was too short | Bench-test value did not allow enough wetting time | Increased to 20 s | Longer watering with retained protection |
+| 8 | Pump stopped/restarted after sudden soil jumps | Motor noise disturbed ADC measurements | 16-sample averaging + 3-sample confirmation | Single spikes no longer changed pump state |
+| 9 | OLED text corrupted during pump operation | Motor switching disturbed the sensitive I2C/power environment | Added suppression/filtering, simplified ground paths, separated subsystems | Stable final OLED operation |
+| 10 | DHT11 produced invalid readings around pump operation | Timing-sensitive protocol was vulnerable to disturbance | Retries, last-valid retention, no new DHT read while pump is ON | More stable final temperature/humidity output |
+| 11 | OLED froze while UART continued updating | MCU was still running; fault was localized to OLED/I2C/power conditions | Used UART to isolate the failure, then corrected hardware/layout | OLED resumed continuous updates after rebuild |
+| 12 | Automatic I2C/OLED recovery made behavior worse or did not help | Root cause was primarily electrical | Removed the recovery experiment | Simpler I2C code worked after hardware correction |
+| 13 | Some OLED labels had missing characters | Custom font did not contain every intermediate label character | Restricted/extended the glyph set | Final labels render correctly |
+| 14 | CCS produced duplicate-function and multiple-main errors | Full source implementation had accidentally been pasted twice | Removed duplicated source half | Duplicate-definition errors disappeared |
+| 15 | One syntax issue caused a large compiler error cascade | Parser context was already lost | Corrected earliest syntax/context error first | Build diagnostics returned to meaningful errors |
+| 16 | OLED behavior changed when redundant grounds were removed | Return-current paths had become mixed and uncontrolled | Simplified grounding and retained one deliberate shared reference | Significant stability improvement |
+| 17 | Incremental breadboard became too complex to diagnose | Too many accumulated jumper and return paths | Rebuilt as sensitive and power breadboards | Stable integrated operation |
+| 18 | Irrigation started immediately at power-up | No explicit operator enable state | Added SW1 START/STOP behavior | Controlled, repeatable demonstrations |
+| 19 | A subsystem test alone could not prove final reliability | Several failures appeared only during interaction | Added full integrated verification sequence | Final system passed integrated test |
 
-### Representative failure evidence
+### Failure evidence
 
 <p align="center">
-  <img src="images/troubleshooting/05-soil-adc-instability-during-pump-operation.png" width="30%" alt="ADC instability">
+  <img src="images/troubleshooting/05-soil-adc-instability-during-pump-operation.png" width="30%" alt="Soil ADC instability">
   <img src="images/troubleshooting/06-oled-display-corruption-close-up.png" width="30%" alt="OLED corruption">
-  <img src="images/troubleshooting/03-temperature-error-and-pump-cycles.png" width="30%" alt="DHT error and pump cycles">
+  <img src="images/troubleshooting/03-temperature-error-and-pump-cycles.png" width="30%" alt="DHT error during pump testing">
 </p>
 
-The central lesson from these failures was that the project was not only a firmware problem and not only a wiring problem. The final solution required **software filtering + state logic + power suppression + grounding changes + physical layout changes** working together.
+Detailed chronology: [`docs/troubleshooting.md`](docs/troubleshooting.md)
+
+Coverage audit: [`docs/troubleshooting-audit.md`](docs/troubleshooting-audit.md)
 
 ---
 
 # 9. Final Verification
 
-The completed system was checked as one closed loop rather than as isolated modules.
-
-## 9.1 Functional test summary
-
-| Test | Final result |
+| Test | Result |
 |---|---|
-| UART 115200 8N1 communication | Passed |
+| Battery pack measured before regulation | Passed, ~5.72 V |
+| LM2596 adjusted and measured | Passed, 5.00 V |
+| UART communication | Passed |
 | OLED initialization and live refresh | Passed |
-| DHT11 temperature / humidity | Passed |
-| DHT retry + last-valid retention | Passed |
-| Soil ADC response and calibrated percentage | Passed |
-| LDR ADC response and light percentage | Passed |
+| DHT11 temperature/humidity | Passed |
+| DHT retry and last-valid handling | Passed |
+| Soil ADC and calibrated percentage | Passed |
+| LDR ADC and light percentage | Passed |
 | 16-sample ADC averaging | Passed |
 | BC337 relay driver | Passed |
 | Relay default-open pump path | Passed |
@@ -557,23 +553,19 @@ The completed system was checked as one closed loop rather than as isolated modu
 | Common-ground reference | Passed |
 | Real-soil irrigation response | Passed |
 
-## 9.2 Normal closed-loop sequence
-
-### Dry soil accepted → pump ON
+### Dry condition accepted → pump ON
 
 <p align="center">
-  <img src="images/uart/04-dry-soil-trigger-pump-on.png" width="78%" alt="Dry soil pump on UART evidence">
+  <img src="images/uart/04-dry-soil-trigger-pump-on.png" width="78%" alt="Dry condition pump ON UART evidence">
 </p>
 
-### Moisture rises → confirmed wet state → pump OFF
+### Moisture rises → confirmed wet condition → pump OFF
 
 <p align="center">
-  <img src="images/uart/05-wet-soil-normal-pump-off.png" width="78%" alt="Wet soil normal pump off UART evidence">
+  <img src="images/uart/05-wet-soil-normal-pump-off.png" width="78%" alt="Wet condition normal pump OFF UART evidence">
 </p>
 
 ### Safety fallback
-
-If the wet threshold is not reached in time, the controller stops the pump at 20 seconds and enters the safety state.
 
 <p align="center">
   <img src="images/uart/03-final-uart-monitoring-safety-state.png" width="78%" alt="Safety timeout UART evidence">
@@ -581,46 +573,22 @@ If the wet threshold is not reached in time, the controller stops the pump at 20
 
 ---
 
-# 10. Video Validation
-
-The repository contains seven optimized MP4 recordings. GitHub does not provide a dependable inline player for these normal committed video files, so the preview images below are clickable and open the corresponding raw MP4 directly.
-
-<table>
-<tr>
-<td align="center" width="50%">
-<a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4"><img src="images/final-system/09-complete-irrigation-setup-with-reservoir.jpg" width="100%"></a><br>
-<b>Final irrigation demonstration</b>
-</td>
-<td align="center" width="50%">
-<a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4"><img src="images/final-system/10-sw1-start-stop-control-frame.jpg" width="100%"></a><br>
-<b>Integrated system control test</b>
-</td>
-</tr>
-<tr>
-<td align="center" width="50%">
-<a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4"><img src="images/relay-driver/07-relay-switching-test-frame.jpg" width="100%"></a><br>
-<b>Relay-driver switching test</b>
-</td>
-<td align="center" width="50%">
-<a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4"><img src="images/pump/07-pump-and-oled-integration-test-frame.jpg" width="100%"></a><br>
-<b>Pump and display integration test</b>
-</td>
-</tr>
-</table>
-
-Additional recordings:
+# 10. Additional Video Tests
 
 - [Soil-moisture / water test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/01-soil-moisture-water-test.mp4)
 - [OLED and sensor subsystem test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
+- [Relay-driver switching test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4)
+- [Pump and display integration test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4)
 - [Sensitive-subsystem soil test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
+- [Integrated system control test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4)
 
-For every retained photograph and video-derived frame, see [`docs/media-inventory.md`](docs/media-inventory.md).
+The primary final demonstration remains at [`videos/final-demo/01-final-irrigation-demo.mp4`](videos/final-demo/01-final-irrigation-demo.mp4).
 
 ---
 
-# 11. Build and Run in Code Composer Studio
+# 11. Build and Run
 
-Development environment used by the project:
+Development environment:
 
 - Code Composer Studio
 - TivaWare for C Series 2.2.0.295
@@ -628,7 +596,7 @@ Development environment used by the project:
 - Stellaris ICDI debug interface
 - PuTTY or another serial terminal
 
-The original project references the TivaWare installation path used on the development machine:
+Original TivaWare path used during development:
 
 ```text
 C:/ti/TivaWare_C_Series-2.2.0.295/
@@ -636,105 +604,78 @@ C:/ti/TivaWare_C_Series-2.2.0.295/
 
 If TivaWare is installed elsewhere, update the CCS include/library paths.
 
-### Import
+Import the project from:
 
 ```text
-File
--> Import
--> CCS Projects
--> select firmware/irrigation_system/
+firmware/irrigation_system/
 ```
 
-### Build
-
-```text
-Project -> Build Project
-```
-
-Generated `Debug/`, object, binary and map outputs are intentionally not tracked in Git.
-
-### Flash / debug
-
-Connect the LaunchPad through the DEBUG USB connector, then use the normal CCS debug/flash workflow.
-
-### Serial terminal
-
-```text
-115200 baud
-8 data bits
-no parity
-1 stop bit
-no flow control
-```
-
-Full instructions: [`docs/build-and-run.md`](docs/build-and-run.md).
+Full instructions: [`docs/build-and-run.md`](docs/build-and-run.md)
 
 ---
 
-# 12. Recommended Reproduction and Test Order
+# 12. Recommended Reproduction Order
 
-A student or engineer reproducing the project should verify one layer at a time:
-
-1. **LaunchPad + UART**: confirm stable serial output.
-2. **OLED only**: verify initialization and I2C updates.
-3. **DHT11**: verify temperature/humidity values.
-4. **LDR**: observe ADC/light percentage under two illumination conditions.
-5. **Soil sensor**: record dry, intermediate and wet values; confirm the supplied calibration is appropriate for the actual probe/soil.
-6. **Relay driver without pump**: verify BC337/relay switching repeatedly.
-7. **Pump contact path**: confirm COM/NO wiring and default pump-off behavior.
-8. **Add suppression components**: diode, 100 nF and 470 µF.
-9. **Connect the common reference** between sensitive and power subsystems.
-10. **Run dry-confirmation test**: pump must not start from only one low sample.
-11. **Run wet-confirmation test**: pump must stop normally after three accepted wet samples.
-12. **Run safety test**: if the wet target is not reached, pump must stop at 20 s.
-13. **Run SW1 test**: startup STOP, first press RUN, second press STOP/reset.
-14. **Run full motor/noise test** while watching both OLED and UART.
-15. **Run the real-soil closed-loop test** with the irrigation outlet positioned away from the probe so the probe measures soil wetting rather than a direct water stream.
-
-This sequence mirrors the debugging logic that ultimately made the prototype stable.
+1. LaunchPad + UART
+2. OLED
+3. DHT11
+4. LDR
+5. Soil sensor and calibration
+6. Battery pack voltage measurement
+7. LM2596 adjustment to 5.00 V
+8. BC337/relay test without pump
+9. Relay COM/NO pump path
+10. 1N4007, 100 nF, and 470 µF suppression/filtering
+11. Common reference between subsystems
+12. Dry confirmation test
+13. Wet confirmation test
+14. Safety timeout test
+15. SW1 START/STOP test
+16. Full motor/noise test while watching OLED and UART
+17. Real-soil closed-loop irrigation test
 
 ---
 
-# 13. Design Decisions and Why They Exist
+# 13. Why the Final Design Looks This Way
 
 | Design choice | Reason |
 |---|---|
-| 35% start / 50% stop | Adds hysteresis and prevents threshold chatter |
+| LM2596 adjusted to measured 5.00 V | Keeps the power-side supply known and repeatable |
+| 35% start / 50% stop | Prevents threshold chatter |
 | Three consecutive samples | Rejects isolated ADC disturbances |
-| 16-sample ADC average | Reduces short analog spikes |
-| BC337 relay interface | Provides a controlled interface between PB0 and relay input stage |
-| Relay NO contact | Keeps pump physically disconnected when relay is inactive |
-| 20 s maximum runtime | Prevents unlimited pump operation if wet threshold is not reached |
-| DHT11 read deferral while pump runs | Avoids timing-sensitive transactions during the noisiest operating state |
-| Last-valid DHT data | Prevents transient failures from immediately destroying useful display data |
-| SW1 manual enable | Makes startup predictable and gives the operator explicit control |
-| Diode + 100 nF + 470 µF | Reduces motor/power disturbances |
-| Two-breadboard architecture | Separates sensitive electronics from the high-current/noisy pump stage |
-| One deliberate common reference | Keeps PB0 electrically meaningful without recreating the earlier uncontrolled ground network |
-| UART diagnostics | Provides an independent observation channel when the OLED itself is failing |
+| 16-sample ADC averaging | Reduces short analog spikes |
+| BC337 relay interface | Provides a controlled PB0-to-relay interface |
+| Relay NO contact | Keeps pump disconnected while relay is inactive |
+| 20 s runtime limit | Prevents unlimited pump operation |
+| DHT read deferral while pump runs | Avoids timing-sensitive transactions during the noisiest state |
+| Last-valid DHT data | Keeps useful values after transient read failure |
+| SW1 manual enable | Gives predictable startup and explicit operator control |
+| 1N4007 + 100 nF + 470 µF | Reduces motor and supply disturbances |
+| Two-breadboard architecture | Separates sensitive electronics from high-current switching |
+| One deliberate common reference | Keeps PB0 electrically meaningful without recreating uncontrolled ground paths |
+| UART diagnostics | Gives an independent observation path when the OLED fails |
 
 ---
 
-# 14. Limitations
+# 14. Limitations and Next Steps
 
-The final prototype works as a demonstration platform, but it is still a breadboard system.
+The final prototype is still a breadboard demonstrator:
 
-- DHT11 accuracy and update speed are limited.
-- Soil calibration depends on the specific probe and soil condition.
-- LDR calibration depends on the physical lighting environment.
-- The resistive soil probe is not ideal for long-term deployment because corrosion can affect it.
+- DHT11 update rate and accuracy are limited.
+- Soil calibration depends on the individual probe and soil.
+- LDR calibration depends on the lighting environment.
+- A resistive soil probe is not ideal for permanent deployment because of corrosion.
 - Several firmware operations are blocking.
-- The motor/power system is still breadboard-based rather than a PCB with controlled return paths.
-- No wireless connection or historical data logging is implemented.
-- No water-level or pump-current fault sensor is included.
+- Motor/power wiring is breadboard-based rather than a PCB with controlled current return paths.
+- There is no historical data logging, wireless connection, water-level sensing, or pump-current fault detection.
 
-Potential next steps include a capacitive soil sensor, MOSFET pump driver, custom PCB, non-blocking sensor drivers, data logging, configurable thresholds, wireless connectivity, RTC scheduling, water-level sensing, and current-based pump fault detection.
+Useful next steps would be a capacitive soil sensor, MOSFET pump driver, custom PCB, non-blocking sensor drivers, configurable thresholds, RTC scheduling, data logging, wireless telemetry, water-level sensing, and pump-current monitoring.
 
 ---
 
 # 15. Final Engineering Result
 
-The finished prototype demonstrates the entire embedded control chain:
+The final control chain is:
 
 ```text
 Soil condition
@@ -743,7 +684,7 @@ Soil condition
 -> 16-sample filtering
 -> calibrated moisture percentage
 -> hysteresis + confirmation logic
--> PB0 control output
+-> PB0
 -> BC337 relay driver
 -> relay power switching
 -> pump operation
@@ -761,11 +702,9 @@ UART  -> independent diagnostics
 SW1   -> operator START / STOP
 ```
 
-The most important engineering result is not simply that the pump turns on. The project shows how adding a real electromechanical load can destabilize an otherwise working embedded sensor platform, and how that failure can be diagnosed and corrected through **instrumentation, controlled experiments, filtering, state-machine changes, hardware suppression, grounding redesign, and physical subsystem separation**.
+The main engineering challenge was not simply switching the pump. Adding a real electromechanical load exposed supply, grounding, analog-measurement, I2C, and timing problems that were not visible in the sensor-only system. The final prototype became stable only after the electrical and software problems were treated together through measured supply setup, filtering, confirmation logic, suppression components, grounding changes, and physical subsystem separation.
 
-For the full failure history, see [`docs/troubleshooting.md`](docs/troubleshooting.md). For every retained photo/video asset, see [`docs/media-inventory.md`](docs/media-inventory.md).
-
----
+For every retained photo and video asset, see [`docs/media-inventory.md`](docs/media-inventory.md).
 
 ## License
 
