@@ -1,0 +1,19 @@
+# Normalize text files in the repository while keeping embedded source files LF-only.
+* text=auto
+
+*.c    text eol=lf
+*.h    text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.cmd  text eol=lf
+*.xml  text eol=lf
+*.ccxml text eol=lf
+*.ini  text eol=lf
+*.prefs text eol=lf
+
+# Binary project media
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.mp4  binary
+*.mov  binary
