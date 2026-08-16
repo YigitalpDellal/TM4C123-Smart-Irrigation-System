@@ -10,9 +10,9 @@ This repository records the complete build process, including the failures that 
 
 ## Final Demo
 
-The main demonstration recording is kept at:
+GitHub's normal repository file viewer does not reliably preview a committed MP4 of this size. The links below therefore open the **raw MP4 directly**, bypassing the large-file preview page.
 
-[`videos/final-demo/01-final-irrigation-demo.mp4`](videos/final-demo/01-final-irrigation-demo.mp4)
+### [▶ Open Final Irrigation Demonstration](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4)
 
 <p align="center">
 <a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4">
@@ -20,7 +20,7 @@ The main demonstration recording is kept at:
 </a>
 </p>
 
-**Click the image above to open the final irrigation demonstration.** Depending on the browser, GitHub may play the raw MP4 directly or download it.
+**Click either the title link or the preview image above.** The browser receives the MP4 directly instead of opening GitHub's repository file-preview page. Depending on browser settings, it may play in the browser's native video player or download the file.
 
 ---
 
@@ -582,7 +582,7 @@ Coverage audit: [`docs/troubleshooting-audit.md`](docs/troubleshooting-audit.md)
 - [Sensitive-subsystem soil test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
 - [Integrated system control test](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4)
 
-The primary final demonstration remains at [`videos/final-demo/01-final-irrigation-demo.mp4`](videos/final-demo/01-final-irrigation-demo.mp4).
+The primary final demonstration is available through the [direct MP4 link](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4).
 
 ---
 
