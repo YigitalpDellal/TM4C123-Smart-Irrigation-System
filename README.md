@@ -1,16 +1,16 @@
 # TM4C123 Smart Irrigation System
 
-An embedded smart irrigation controller built around the Texas Instruments **EK-TM4C123GXL Tiva C LaunchPad**. The system measures soil moisture, ambient light, temperature, and humidity, presents live status on an SSD1306 OLED and UART, and controls a DC water pump through a transistor-driven relay stage.
+An embedded closed-loop irrigation controller built around the Texas Instruments **EK-TM4C123GXL Tiva C LaunchPad**. The system measures soil moisture, ambient light, temperature, and humidity, displays live status on an SSD1306 OLED, streams diagnostics over UART, and automatically controls a DC water pump through a BC337-driven relay interface.
 
-The final prototype combines sensor calibration, 16-sample ADC averaging, hysteresis, consecutive-sample confirmation, a 20-second pump safety timeout, SW1 manual START/STOP control, and hardware changes introduced to reduce motor-generated electrical interference.
+The final prototype combines sensor calibration, 16-sample ADC averaging, hysteresis, consecutive-sample confirmation, a 20-second pump safety timeout, SW1 manual START/STOP control, and hardware changes introduced to suppress motor-generated interference.
 
-## Final System
+<p align="center">
+<img src="images/final-system/01-final-system-hero-view.jpg" width="92%" alt="Final TM4C123 smart irrigation system">
+</p>
 
-![Final system](images/final-system/01-final-system-hero-view.jpg)
+## Project Links
 
-### Project links
-
-- **Final source:** [`source/main.c`](source/main.c)
+- **Final readable source:** [`source/main.c`](source/main.c)
 - **Importable CCS project:** [`firmware/irrigation_system/`](firmware/irrigation_system/)
 - **Project report:** [`docs/project-report.md`](docs/project-report.md)
 - **Hardware connections:** [`docs/hardware-connections.md`](docs/hardware-connections.md)
@@ -18,77 +18,82 @@ The final prototype combines sensor calibration, 16-sample ADC averaging, hyster
 - **Troubleshooting coverage audit:** [`docs/troubleshooting-audit.md`](docs/troubleshooting-audit.md)
 - **Test results:** [`docs/test-results.md`](docs/test-results.md)
 - **Build and run guide:** [`docs/build-and-run.md`](docs/build-and-run.md)
-- **Media evidence index:** [`docs/media-evidence.md`](docs/media-evidence.md)
+- **Evidence guide:** [`docs/media-evidence.md`](docs/media-evidence.md)
 - **Complete media inventory:** [`docs/media-inventory.md`](docs/media-inventory.md)
+
+## Project at a Glance
+
+| Item | Final implementation |
+|---|---|
+| Controller | EK-TM4C123GXL / TM4C123GH6PM |
+| Soil sensing | PE3 / AIN0, calibrated 0–100% |
+| Light sensing | PE2 / AIN1, LDR divider |
+| Temperature / humidity | DHT11 on PA2 |
+| Local display | SSD1306 OLED on I2C0 |
+| Diagnostics | UART0, 115200 8N1 |
+| Pump control | PB0 → 1 kΩ → BC337 → relay input |
+| Irrigation start | Soil < 35% for 3 consecutive samples |
+| Normal stop | Soil > 50% for 3 consecutive samples |
+| ADC filtering | 16-sample averaging |
+| Safety limit | 20 s maximum continuous pump runtime |
+| Manual control | SW1 / PF4 START–STOP toggle |
 
 ## Video Demonstrations
 
-The repository contains optimized H.264/MP4 copies of the original 4K validation recordings. GitHub's normal file page is not a reliable video player for these larger committed files, so the links below point directly to the raw media files.
+The repository contains seven optimized H.264/MP4 validation recordings. Click a preview image to open the corresponding video.
 
-- **[Final irrigation demonstration — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4)**
-- [Soil-moisture / water test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/01-soil-moisture-water-test.mp4)
-- [OLED and sensor subsystem test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4)
-- [Relay-driver switching test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4)
-- [Pump and display integration test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4)
-- [Sensitive-subsystem soil test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4)
-- [Integrated system control test — open/download](https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4)
+<table>
+<tr>
+<td align="center" width="50%"><a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/final-demo/01-final-irrigation-demo.mp4"><img src="images/final-system/01-final-system-hero-view.jpg" width="100%"></a><br><b>Final Irrigation Demonstration</b></td>
+<td align="center" width="50%"><a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/01-soil-moisture-water-test.mp4"><img src="images/soil-sensor/09-soil-sensor-and-irrigation-outlet-frame.jpg" width="100%"></a><br><b>Soil-Moisture / Water Test</b></td>
+</tr>
+<tr>
+<td align="center" width="50%"><a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/02-oled-sensor-subsystem-test.mp4"><img src="images/sensitive-subsystem/05-sensitive-subsystem-live-display-frame.jpg" width="100%"></a><br><b>OLED and Sensor Subsystem Test</b></td>
+<td align="center" width="50%"><a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/03-relay-driver-switching-test.mp4"><img src="images/relay-driver/07-relay-switching-test-frame.jpg" width="100%"></a><br><b>Relay-Driver Switching Test</b></td>
+</tr>
+<tr>
+<td align="center" width="50%"><a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/04-pump-display-integration-test.mp4"><img src="images/pump/07-pump-and-oled-integration-test-frame.jpg" width="100%"></a><br><b>Pump and Display Integration Test</b></td>
+<td align="center" width="50%"><a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/05-sensitive-subsystem-soil-test.mp4"><img src="images/sensitive-subsystem/01-sensitive-subsystem-running.jpg" width="100%"></a><br><b>Sensitive-Subsystem Soil Test</b></td>
+</tr>
+<tr>
+<td align="center" width="50%"><a href="https://raw.githubusercontent.com/YigitalpDellal/TM4C123-Smart-Irrigation-System/main/videos/subsystem-tests/06-integrated-system-control-test.mp4"><img src="images/final-system/10-sw1-start-stop-control-frame.jpg" width="100%"></a><br><b>Integrated System Control Test</b></td>
+<td align="center" width="50%"><a href="videos/final-demo/01-final-irrigation-demo.mp4"><img src="images/final-system/09-complete-irrigation-setup-with-reservoir.jpg" width="100%"></a><br><b>Final Demo Repository File</b></td>
+</tr>
+</table>
 
 ## Main Features
 
-- EK-TM4C123GXL / TM4C123GH6PM based control
+- EK-TM4C123GXL / TM4C123GH6PM based controller
 - Soil moisture measurement through ADC0 / AIN0
-- LDR-based ambient light measurement through ADC0 / AIN1
+- LDR-based ambient-light measurement through ADC0 / AIN1
 - DHT11 temperature and humidity sensing
 - SSD1306 OLED over I2C0
 - UART0 monitoring at 115200 8N1
+- BC337-based relay input driver
 - Relay-controlled DC water pump
-- BC337 transistor relay-input driver
 - 16-sample ADC averaging
-- 35% irrigation start threshold
-- 50% irrigation stop threshold
-- 3-sample dry confirmation
-- 3-sample wet confirmation
-- 20-second maximum pump runtime safety limit
+- 35% / 50% hysteresis band
+- 3-sample dry and wet confirmation
+- 20-second maximum pump runtime safety lock
 - SW1-based manual START/STOP control
-- Motor-noise suppression and power decoupling
+- Flyback/noise-suppression hardware and bulk decoupling
 - Physically separated sensitive-electronics and power subsystems
 
 ## System Architecture
 
-The final hardware is separated into two functional subsystems.
-
-### Sensitive Electronics Subsystem
-
-- EK-TM4C123GXL LaunchPad
-- SSD1306 OLED
-- DHT11
-- Soil moisture sensor
-- LDR + 10 kΩ voltage divider
-
-![Sensitive subsystem](images/sensitive-subsystem/01-sensitive-subsystem-running.jpg)
-
-### Power and Pump Subsystem
-
-- LM2596 buck converter
-- BC337 transistor
-- 1 kΩ base resistor
-- 10 kΩ relay-input pull-up resistor
-- Relay module
-- DC water pump
-- 1N4007 diode
-- 100 nF ceramic capacitor
-- 470 µF electrolytic capacitor
-
-![Power subsystem](images/power-subsystem/10-power-subsystem-complete-view.jpg)
-
-The two subsystems share the required control signal and electrical reference:
+<table>
+<tr>
+<td width="50%" valign="top"><b>Sensitive Electronics</b><br>LaunchPad, OLED, DHT11, soil sensor, LDR divider<br><br><img src="images/sensitive-subsystem/01-sensitive-subsystem-running.jpg" width="100%"></td>
+<td width="50%" valign="top"><b>Power / Pump Subsystem</b><br>LM2596, BC337, relay, pump, diode and filtering<br><br><img src="images/power-subsystem/10-power-subsystem-complete-view.jpg" width="100%"></td>
+</tr>
+</table>
 
 ```text
 Tiva PB0 --------------------> BC337 base-driver path
 Tiva GND --------------------> LM2596 OUT- / power-side ground
 ```
 
-This layout was adopted after motor-generated interference caused OLED corruption, DHT11 failures, and unstable analog readings in the earlier combined breadboard arrangement.
+The two-subsystem architecture was adopted after pump-related electrical interference produced OLED corruption, DHT11 failures and unstable ADC readings in the earlier combined breadboard arrangement.
 
 ## Pin Connections
 
@@ -97,29 +102,19 @@ This layout was adopted after motor-generated interference caused OLED corruptio
 | UART0 RX | PA0 | Stellaris Virtual Serial Port |
 | UART0 TX | PA1 | Stellaris Virtual Serial Port |
 | DHT11 data | PA2 | DHT11 S |
-| Soil ADC | PE3 / AIN0 | Soil sensor AO |
-| LDR ADC | PE2 / AIN1 | LDR voltage-divider midpoint |
-| Relay control | PB0 | 1 kΩ -> BC337 Base |
+| Relay control | PB0 | 1 kΩ → BC337 Base |
 | OLED SCL | PB2 / I2C0SCL | SSD1306 SCL |
 | OLED SDA | PB3 / I2C0SDA | SSD1306 SDA |
+| LDR ADC | PE2 / AIN1 | LDR divider midpoint |
+| Soil ADC | PE3 / AIN0 | Soil sensor AO |
 | User switch | PF4 / SW1 | Manual START/STOP |
 
-Full wiring details are documented in [`docs/hardware-connections.md`](docs/hardware-connections.md).
-
 ## Sensor Calibration
-
-### Soil moisture
-
-The soil sensor analog output is connected to PE3/AIN0.
 
 ```c
 #define SOIL_DRY_VALUE 4090U
 #define SOIL_WET_VALUE 1650U
 ```
-
-Values outside the calibrated interval are clamped so the displayed moisture value remains between 0% and 100%.
-
-### LDR voltage divider
 
 ```text
 3.3 V
@@ -133,17 +128,13 @@ Values outside the calibrated interval are clamped so the displayed moisture val
  GND
 ```
 
-The ADC value is averaged and mapped to the calibrated light-percentage range used by the display and UART output.
-
 ## Automatic Irrigation Logic
-
-The irrigation controller does **not** enable automatic watering at power-up. Monitoring starts immediately, but the pump remains disabled until SW1 is pressed.
 
 ```text
 Power ON
    |
    v
-System STOP
+System STOP / Pump OFF
    |
 SW1 pressed
    |
@@ -157,11 +148,9 @@ Automation enabled
    +-- Pump runtime reaches 20 s -------------> SAFETY OFF
 ```
 
-The 35% / 50% thresholds form a hysteresis band. Consecutive-sample confirmation was added so isolated ADC disturbances cannot immediately change the pump state.
+The 35% / 50% thresholds create hysteresis. Consecutive-sample confirmation prevents a single motor-induced ADC spike from immediately changing the pump state.
 
-## Pump Driver and Power Path
-
-The TM4C123 GPIO does not drive the pump or relay input directly. PB0 controls a BC337 transistor interface.
+## Relay Driver and Pump Power Path
 
 ```text
 Tiva PB0
@@ -177,63 +166,43 @@ LM2596 OUT+ ---- 10 kΩ ----+---- Relay IN
 BC337 Emitter ------------ LM2596 OUT-
 ```
 
-Logical behavior:
-
-```text
-PB0 LOW  -> Relay OFF
-PB0 HIGH -> Relay ON
-```
-
-Pump contact wiring:
-
 ```text
 LM2596 OUT+ -> Relay COM
 Relay NO    -> Pump +
 Pump -      -> LM2596 OUT-
 ```
 
-Using the normally-open contact keeps the pump disconnected when the relay is inactive.
-
 ## EMI and Noise Mitigation
 
-Motor integration initially produced OLED corruption, DHT11 read failures, ADC spikes, and occasional display freezes. The final prototype combines several countermeasures:
+Motor integration produced the hardest failures in the project: OLED corruption, OLED freezes, DHT11 errors, soil ADC spikes and unstable pump state transitions. The final solution combines hardware and software mitigation:
 
-- 1N4007 diode across the pump line, reverse-biased during normal operation
+- 1N4007 diode across the pump path
 - 100 nF ceramic capacitor across the motor terminals
 - 470 µF electrolytic capacitor across LM2596 OUT+ / OUT-
-- physical separation of sensitive and high-current circuitry
-- a controlled common-ground connection between subsystems
+- separated sensitive and high-current breadboards
+- deliberate common-ground/reference connection
 - 16-sample ADC averaging
-- 3-sample wet/dry confirmation
+- three-sample wet/dry confirmation
 - DHT11 reads deferred while the pump is running
+- last valid DHT11 value retained after transient read failures
 
-![Common ground connection](images/power-subsystem/17-common-ground-connection-close-up.jpg)
+<p align="center">
+<img src="images/power-subsystem/13-1n4007-flyback-diode-close-up.jpg" width="24%">
+<img src="images/power-subsystem/14-100nf-ceramic-capacitor-close-up.jpg" width="24%">
+<img src="images/power-subsystem/12-470uf-capacitor-close-up.jpg" width="24%">
+<img src="images/power-subsystem/17-common-ground-connection-close-up.jpg" width="24%">
+</p>
 
-The complete failure history and the reasoning behind each correction are recorded in [`docs/troubleshooting.md`](docs/troubleshooting.md).
+## Closed-Loop Verification
 
-## OLED and UART Verification
-
-Final OLED STOP-state example:
-
-![Final OLED status](images/oled/07-final-oled-stop-state-close-up.jpg)
-
-The same controller state is transmitted over UART for independent verification.
-
-Example format:
-
-```text
-ADC:2695 | Soil:57% | Light:23% | System:RUN | Pump:OFF | Time:0s | Temp:29C | Hum:32%
-```
-
-### Dry-start evidence
-
+### Dry condition → Pump ON
 ![Dry soil trigger](images/uart/04-dry-soil-trigger-pump-on.png)
 
-### Normal wet-stop evidence
-
+### Wet condition → Normal Pump OFF
 ![Wet soil normal stop](images/uart/05-wet-soil-normal-pump-off.png)
 
-These logs demonstrate the normal closed-loop sequence: a dry condition enables irrigation, measured moisture rises, and the pump returns to OFF after the wet condition is confirmed. Safety-timeout evidence is retained separately under `images/uart/` and `images/troubleshooting/`.
+### Safety timeout
+![Safety state](images/uart/03-final-uart-monitoring-safety-state.png)
 
 ## Safety Features
 
@@ -246,22 +215,162 @@ These logs demonstrate the normal closed-loop sequence: a dry condition enables 
 - Second SW1 press immediately disables the pump and resets controller state
 - Relay NO contact provides a default-open pump path
 
-## Development and Troubleshooting Highlights
+## Engineering Problems Solved
 
-Development exposed several hardware/software integration problems, including:
+The project documentation retains the failures as well as the final result: soil-calibration issues, threshold chatter, relay-interface problems, BC337 wiring mistakes, incorrect relay contact wiring, timeout refinement, motor-induced ADC noise, OLED corruption and freezing, DHT11 errors, unsuccessful software-only I2C recovery, custom-font limitations, duplicate-source build errors, compiler error cascades, grounding problems, the two-breadboard rebuild, SW1-controlled startup and final integrated verification.
 
-- incorrect early pump/relay contact wiring
-- 3.3 V / relay-input interface problems
-- BC337 driver wiring errors
-- DHT11 timing/read failures
-- OLED display corruption during pump operation
-- soil ADC spikes caused by motor interference
-- unstable pump decisions caused by transient readings
-- duplicated source code causing repeated function definitions and multiple `main()` errors
-- ineffective software-only I2C recovery attempts
-- complex return-current / ground paths in the original breadboard layout
+See [`docs/troubleshooting.md`](docs/troubleshooting.md) and [`docs/troubleshooting-audit.md`](docs/troubleshooting-audit.md) for the full symptom → cause → correction → verification record.
 
-The full chronological record is in [`docs/troubleshooting.md`](docs/troubleshooting.md) and [`docs/development-log.md`](docs/development-log.md).
+## Complete Visual Documentation
+
+Every curated repository image is shown below. This README therefore acts as both a technical overview and the complete visual build record. **All 99 project images are included.**
+
+### Final System
+<p align="center">
+<img src="images/final-system/01-final-system-hero-view.jpg" width="32%">
+<img src="images/final-system/02-final-system-running-angle.jpg" width="32%">
+<img src="images/final-system/03-final-irrigation-system-wide-view.jpg" width="32%">
+<img src="images/final-system/04-final-system-top-view.jpg" width="32%">
+<img src="images/final-system/05-final-system-vertical-overview.jpg" width="32%">
+<img src="images/final-system/06-final-system-full-layout.jpg" width="32%">
+<img src="images/final-system/07-final-system-top-view-additional.jpg" width="32%">
+<img src="images/final-system/08-integrated-hardware-overview-additional.jpg" width="32%">
+<img src="images/final-system/09-complete-irrigation-setup-with-reservoir.jpg" width="32%">
+<img src="images/final-system/10-sw1-start-stop-control-frame.jpg" width="32%">
+</p>
+
+### Component Reference
+<p align="center">
+<img src="images/components/01-ek-tm4c123gxl-launchpad.jpg" width="32%">
+<img src="images/components/02-ssd1306-oled-display.jpg" width="32%">
+<img src="images/components/03-dht11-sensor.jpg" width="32%">
+<img src="images/components/04-soil-moisture-interface-module.jpg" width="32%">
+<img src="images/components/05-soil-moisture-probe.jpg" width="32%">
+<img src="images/components/06-ldr-photoresistor.jpg" width="32%">
+<img src="images/components/07-relay-module.jpg" width="32%">
+<img src="images/components/08-bc337-transistor.jpg" width="32%">
+<img src="images/components/09-lm2596-buck-converter.jpg" width="32%">
+<img src="images/components/10-dc-water-pump.jpg" width="32%">
+<img src="images/components/11-1n4007-diode.jpg" width="32%">
+<img src="images/components/12-resistor-a.jpg" width="32%">
+<img src="images/components/13-resistor-b.jpg" width="32%">
+<img src="images/components/14-100nf-ceramic-capacitor.jpg" width="32%">
+<img src="images/components/15-470uf-electrolytic-capacitor.jpg" width="32%">
+<img src="images/components/16-battery-holder.jpg" width="32%">
+</p>
+
+### Sensitive Electronics Subsystem
+<p align="center">
+<img src="images/sensitive-subsystem/01-sensitive-subsystem-running.jpg" width="32%">
+<img src="images/sensitive-subsystem/02-sensitive-subsystem-top-view.jpg" width="32%">
+<img src="images/sensitive-subsystem/03-sensitive-subsystem-angle-view.jpg" width="32%">
+<img src="images/sensitive-subsystem/04-sensitive-subsystem-integration.jpg" width="32%">
+<img src="images/sensitive-subsystem/05-sensitive-subsystem-live-display-frame.jpg" width="32%">
+</p>
+
+### Power and Pump Subsystem
+<p align="center">
+<img src="images/power-subsystem/01-power-subsystem-overview.jpg" width="32%">
+<img src="images/power-subsystem/02-relay-and-power-wiring.jpg" width="32%">
+<img src="images/power-subsystem/03-pump-protection-wiring-close-up.jpg" width="32%">
+<img src="images/power-subsystem/04-relay-lm2596-integration.jpg" width="32%">
+<img src="images/power-subsystem/05-pump-noise-suppression-network.jpg" width="32%">
+<img src="images/power-subsystem/06-lm2596-output-filter-wiring.jpg" width="32%">
+<img src="images/power-subsystem/07-flyback-diode-close-up.jpg" width="32%">
+<img src="images/power-subsystem/08-power-path-integrated-view.jpg" width="32%">
+<img src="images/power-subsystem/09-driver-resistor-wiring-close-up.jpg" width="32%">
+<img src="images/power-subsystem/10-power-subsystem-complete-view.jpg" width="32%">
+<img src="images/power-subsystem/11-bulk-capacitor-integration.jpg" width="32%">
+<img src="images/power-subsystem/12-470uf-capacitor-close-up.jpg" width="32%">
+<img src="images/power-subsystem/13-1n4007-flyback-diode-close-up.jpg" width="32%">
+<img src="images/power-subsystem/14-100nf-ceramic-capacitor-close-up.jpg" width="32%">
+<img src="images/power-subsystem/15-relay-lm2596-power-subsystem-view.jpg" width="32%">
+<img src="images/power-subsystem/16-power-subsystem-alternate-view.jpg" width="32%">
+<img src="images/power-subsystem/17-common-ground-connection-close-up.jpg" width="32%">
+<img src="images/power-subsystem/18-power-subsystem-running-frame.jpg" width="32%">
+</p>
+
+### Soil Sensor and Irrigation
+<p align="center">
+<img src="images/soil-sensor/01-soil-sensor-interface-wiring.jpg" width="32%">
+<img src="images/soil-sensor/02-soil-probe-installed-in-soil.jpg" width="32%">
+<img src="images/soil-sensor/03-soil-sensor-tiva-connection.jpg" width="32%">
+<img src="images/soil-sensor/04-soil-sensor-breadboard-overview.jpg" width="32%">
+<img src="images/soil-sensor/05-soil-dry-uart-test.png" width="32%">
+<img src="images/soil-sensor/06-soil-wet-dry-transition-uart.png" width="32%">
+<img src="images/soil-sensor/07-soil-intermediate-moisture-uart.png" width="32%">
+<img src="images/soil-sensor/08-soil-safety-off-uart.png" width="32%">
+<img src="images/soil-sensor/09-soil-sensor-and-irrigation-outlet-frame.jpg" width="32%">
+</p>
+
+### LDR / Ambient Light
+<p align="center">
+<img src="images/ldr/01-ldr-voltage-divider-overview.jpg" width="32%">
+<img src="images/ldr/02-ldr-voltage-divider-close-up.jpg" width="32%">
+<img src="images/ldr/03-ldr-uart-test-condition-a.png" width="32%">
+<img src="images/ldr/04-ldr-uart-test-condition-b.png" width="32%">
+</p>
+
+### DHT11 Temperature and Humidity
+<p align="center">
+<img src="images/dht11/01-dht11-and-oled-running.jpg" width="32%">
+<img src="images/dht11/02-dht11-breadboard-wiring-top-view.jpg" width="32%">
+<img src="images/dht11/03-dht11-breadboard-wiring-angle.jpg" width="32%">
+<img src="images/dht11/04-dht11-uart-readings.png" width="32%">
+</p>
+
+### OLED and Display Evidence
+<p align="center">
+<img src="images/oled/01-oled-live-display-close-up.jpg" width="32%">
+<img src="images/oled/02-oled-i2c-wiring-close-up.jpg" width="32%">
+<img src="images/oled/03-oled-breadboard-integration.jpg" width="32%">
+<img src="images/oled/04-oled-early-integration-view.jpg" width="32%">
+<img src="images/oled/05-oled-temperature-error-uart.png" width="32%">
+<img src="images/oled/06-oled-uart-operating-output.png" width="32%">
+<img src="images/oled/07-final-oled-stop-state-close-up.jpg" width="32%">
+</p>
+
+### BC337 Relay Driver
+<p align="center">
+<img src="images/relay-driver/01-bc337-driver-early-test.jpg" width="32%">
+<img src="images/relay-driver/02-relay-driver-system-test.jpg" width="32%">
+<img src="images/relay-driver/03-bc337-resistor-network-close-up.jpg" width="32%">
+<img src="images/relay-driver/04-relay-and-lm2596-wiring.jpg" width="32%">
+<img src="images/relay-driver/05-bc337-driver-breadboard-view.jpg" width="32%">
+<img src="images/relay-driver/06-relay-driver-integrated-view.jpg" width="32%">
+<img src="images/relay-driver/07-relay-switching-test-frame.jpg" width="32%">
+</p>
+
+### Pump and Water Path
+<p align="center">
+<img src="images/pump/01-irrigation-outlet-at-soil.jpg" width="32%">
+<img src="images/pump/02-pump-noise-suppression-network.jpg" width="32%">
+<img src="images/pump/03-pump-wiring-close-up.jpg" width="32%">
+<img src="images/pump/04-flyback-diode-across-pump-line.jpg" width="32%">
+<img src="images/pump/05-pump-power-supply-connection.jpg" width="32%">
+<img src="images/pump/06-pump-relay-power-path.jpg" width="32%">
+<img src="images/pump/07-pump-and-oled-integration-test-frame.jpg" width="32%">
+</p>
+
+### Troubleshooting Evidence
+<p align="center">
+<img src="images/troubleshooting/01-early-relay-driver-test.jpg" width="32%">
+<img src="images/troubleshooting/02-pump-safety-off-behavior.png" width="32%">
+<img src="images/troubleshooting/03-temperature-error-and-pump-cycles.png" width="32%">
+<img src="images/troubleshooting/04-initial-pump-relay-wiring.png" width="32%">
+<img src="images/troubleshooting/05-soil-adc-instability-during-pump-operation.png" width="32%">
+<img src="images/troubleshooting/06-oled-display-corruption-close-up.png" width="32%">
+<img src="images/troubleshooting/07-oled-display-corruption-after-pump-operation.png" width="32%">
+</p>
+
+### Final UART Evidence
+<p align="center">
+<img src="images/uart/01-final-uart-monitoring-a.png" width="32%">
+<img src="images/uart/02-final-uart-monitoring-b.png" width="32%">
+<img src="images/uart/03-final-uart-monitoring-safety-state.png" width="32%">
+<img src="images/uart/04-dry-soil-trigger-pump-on.png" width="32%">
+<img src="images/uart/05-wet-soil-normal-pump-off.png" width="32%">
+</p>
 
 ## Repository Structure
 
@@ -282,19 +391,7 @@ TM4C123-Smart-Irrigation-System/
 │   ├── troubleshooting-audit.md
 │   ├── troubleshooting.md
 │   └── user-manual.md
-├── images/
-│   ├── components/
-│   ├── dht11/
-│   ├── final-system/
-│   ├── ldr/
-│   ├── oled/
-│   ├── power-subsystem/
-│   ├── pump/
-│   ├── relay-driver/
-│   ├── sensitive-subsystem/
-│   ├── soil-sensor/
-│   ├── troubleshooting/
-│   └── uart/
+├── images/                       # 99 curated project images
 ├── videos/
 │   ├── subsystem-tests/
 │   └── final-demo/
@@ -308,17 +405,11 @@ TM4C123-Smart-Irrigation-System/
 
 ## Development Environment
 
-The prototype was developed with:
-
 - Code Composer Studio
 - TivaWare for C Series 2.2.0.295
 - TI ARM Compiler 20.2.7.LTS
 - Stellaris ICDI debug interface
 - PuTTY or another serial terminal
-
-See [`docs/build-and-run.md`](docs/build-and-run.md) for repository import, build, flash, and serial-monitor instructions.
-
-## UART Configuration
 
 ```text
 Baud rate:    115200
@@ -328,9 +419,11 @@ Stop bits:    1
 Flow control: None
 ```
 
+See [`docs/build-and-run.md`](docs/build-and-run.md) for import, build, flash and serial-monitor instructions.
+
 ## Final Status
 
-The final prototype demonstrates closed-loop irrigation with live environmental monitoring. The OLED and UART remain available for observation while the pump is controlled according to calibrated soil moisture, hysteresis, confirmation counters, operator enable state, and maximum-runtime safety protection.
+The completed prototype demonstrates a full embedded closed loop: sensing → filtering → calibrated interpretation → decision logic → relay/pump actuation → physical soil wetting → new sensor measurement. OLED and UART remain available for observation while the pump is controlled according to calibrated soil moisture, hysteresis, confirmation counters, operator enable state and maximum-runtime safety protection.
 
 The readable source and the CCS project contain the same final application code.
 
